@@ -17,7 +17,7 @@ else
 fi
 
 # Make sure OPENCMISS_INSTALL_ROOT is an absolute path
-if [ ! $OPENCMISSEXTRAS_ROOT ]; then
+if [ ! $OPENCMISS_INSTALL_ROOT ]; then
     export OPENCMISS_INSTALL_ROOT=$OPENCMISS_ROOT/install
 else
     if [ -r $OPENCMISS_INSTALL_ROOT ]; then
