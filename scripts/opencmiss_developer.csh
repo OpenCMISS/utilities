@@ -398,6 +398,9 @@ switch ( ${sysname} )
 		case mvapich2:
 		    setenv MPI_STRING mvapich2
 		    breaksw      
+		case msmpi:
+		    setenv MPI_STRING msmpi
+		    breaksw      
 		case intel:
 		    setenv MPI_STRING intel
 		    #Newer Intel directory structure

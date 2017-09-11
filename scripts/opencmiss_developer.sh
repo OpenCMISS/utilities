@@ -397,6 +397,9 @@ case $sysname in
 	      'mvapich2')
 		export MPI_STRING=mvapich2
 		;;
+	      'msmpi')
+		export MPI_STRING=msmpi
+		;;
 	      'intel')
 		export MPI_STRING=intel
 		#Newer Intel directory structure
