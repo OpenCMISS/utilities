@@ -1,5 +1,5 @@
 #!/bin/csh -f
-# Get the compiler portion of the architecture path for OpenCMISS
+# Sets up environment variables, paths etc. for an OpenCMISS developer
 #
 
 setenv HOST `hostname -s`
@@ -66,11 +66,11 @@ switch ( ${sysname} )
 		setenv OPENCMISS_ARCHNAME power5-aix
 		breaksw
 	    case PowerPC_POWER4:
-		setenv archname power4-aix
+		setenv OPENCMISS_ARCHNAME power4-aix
 		breaksw
 	    default:
 		echo "OpenCMISS: The processor architecture of ${PROCESSOR_TYPE} is unknown for AIX."
-		setenv archname unknown-aix
+		setenv OPENCMISS_ARCHNAME unknown-aix
 	endsw
 	unsetenv PROCESSOR_TYPE
    	    
@@ -274,7 +274,12 @@ switch ( ${sysname} )
 		    which gcc >& /dev/null		
 		    if ( $? == 0 ) then
 			setenv GNU_GCC_MAJOR_VERSION `gcc -dumpversion | cut -f1 -d.`
-			setenv GNU_GCC_MINOR_VERSION `gcc -dumpversion | cut -f2 -d.`
+			if ( ${GNU_GCC_MAJOR_VERSION} >= 7) then
+			    setenv GNU_GCC_MAJOR_VERSION `gcc --version | grep -i gcc | cut -f1 -d. | cut -f3 -d' '`
+			    setenv GNU_GCC_MINOR_VERSION `gcc --version | grep -i gcc | cut -f2 -d.`
+			else
+			    setenv GNU_GCC_MINOR_VERSION `gcc -dumpversion | cut -f2 -d.`
+			endif
 			setenv C_COMPILER_STRING gnu-C${GNU_GCC_MAJOR_VERSION}.${GNU_GCC_MINOR_VERSION}
 			unsetenv GNU_GCC_MAJOR_VERSION    
 			unsetenv GNU_GCC_MINOR_VERSION    
@@ -284,7 +289,12 @@ switch ( ${sysname} )
 		    which gfortran >& /dev/null		
 		    if ( $? == 0 ) then
 			setenv GNU_GFORTRAN_MAJOR_VERSION `gfortran -dumpversion | cut -f1 -d.`
-			setenv GNU_GFORTRAN_MINOR_VERSION `gfortran -dumpversion | cut -f2 -d.`
+			if ( ${GNU_GFORTRAN_MAJOR_VERSION} >= 7) then
+			    setenv GNU_GFORTRAN_MAJOR_VERSION `gfortran --version | grep -i fortran | cut -f1 -d. | cut -f4 -d' '`
+			    setenv GNU_GFORTRAN_MINOR_VERSION `gfortran --version | grep -i fortran | cut -f2 -d.`
+			else
+			    setenv GNU_GFORTRAN_MINOR_VERSION `gfortran -dumpversion | cut -f2 -d.`
+			endif
 			setenv FORTRAN_COMPILER_STRING gnu-F${GNU_GFORTRAN_MAJOR_VERSION}.${GNU_GFORTRAN_MINOR_VERSION}
 			unsetenv GNU_GFORTRAN_MAJOR_VERSION    
 			unsetenv GNU_GFORTRAN_MINOR_VERSION    
@@ -311,7 +321,7 @@ switch ( ${sysname} )
 			unsetenv INTEL_IFORT_MAJOR_VERSION    
 			unsetenv INTEL_IFORT_MINOR_VERSION    
 		    else
-			setenv FOTRAN_COMPILER_STRING unknown
+			setenv FORTRAN_COMPILER_STRING unknown
 		    endif
 		    breaksw
 		default:
@@ -388,6 +398,9 @@ switch ( ${sysname} )
 		case mvapich2:
 		    setenv MPI_STRING mvapich2
 		    breaksw      
+		case msmpi:
+		    setenv MPI_STRING msmpi
+		    breaksw      
 		case intel:
 		    setenv MPI_STRING intel
 		    #Newer Intel directory structure
@@ -463,14 +476,29 @@ switch ( ${sysname} )
     
 	if ( $?OPENCMISS_BUILD_TYPE ) then
 	    switch ( ${OPENCMISS_BUILD_TYPE} )
-	       case debug:
+		case debug:
 		    setenv BUILD_TYPE_STRING debug
 		    breaksw
-	        case release:
+		case Debug:
+		    setenv BUILD_TYPE_STRING Debug
+		    breaksw
+		case release:
 		    setenv BUILD_TYPE_STRING release
+		    breaksw
+		case Release:
+		    setenv BUILD_TYPE_STRING Release
 		    breaksw
 		case relwithdebinfo:
 		    setenv BUILD_TYPE_STRING relwithdebinfo
+		    breaksw
+		case RelwithDebInfo:
+		    setenv BUILD_TYPE_STRING RelwithDebInfo
+		    breaksw
+		case minsizerel:
+		    setenv BUILD_TYPE_STRING minsizerel
+		    breaksw
+		case MinSizeRel:
+		    setenv BUILD_TYPE_STRING MinSizeRel
 		    breaksw
 		default:
 		    echo "OpenCMISS: OPENCMISS_BUILD_TYPE of ${OPENCMISS_BUILD_TYPE} is unknown."
@@ -515,11 +543,23 @@ switch ( ${sysname} )
 
 	# Setup python path for OpenCMISS
 	if ( ${OPENCMISS_SETUP_PYTHONPATH} == true ) then
-	    if ( -d ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/python/${OPENCMISS_BUILD_TYPE_ARCHPATH} ) then
+	    if ( ! $?OPENCMISS_PYTHON_VERSION ) then
+		setenv OPENCMISS_PYTHON_VERSION 2.7
+	    endif
+	    setenv OPENCMISS_PYTHON_PATH_OLD ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/python/${OPENCMISS_BUILD_TYPE_ARCHPATH}
+	    setenv OPENCMISS_PYTHON_PATH ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/lib/python${OPENCMISS_PYTHON_VERSION}/${OPENCMISS_BUILD_TYPE_ARCHPATH}/opencmiss.iron
+	    if ( -d ${OPENCMISS_PYTHON_PATH_OLD} ) then
 		if ( ! $?PYTHONPATH ) then
-		    setenv PYTHONPATH ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/python/${OPENCMISS_BUILD_TYPE_ARCHPATH}
+		    setenv PYTHONPATH ${OPENCMISS_PYTHON_PATH_OLD}
 		else
-		    setenv PYTHONPATH ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/python/${OPENCMISS_BUILD_TYPE_ARCHPATH}:${PYTHONPATH}
+		    setenv PYTHONPATH ${OPENCMISS_PYTHON_PATH_OLD}:${PYTHONPATH}
+		endif
+ 	    endif
+	    if ( -d ${OPENCMISS_PYTHON_PATH} ) then
+		if ( ! $?PYTHONPATH ) then
+		    setenv PYTHONPATH ${OPENCMISS_PYTHON_PATH}
+		else
+		    setenv PYTHONPATH ${OPENCMISS_PYTHON_PATH}:${PYTHONPATH}
 		endif
  	    endif
 	endif
@@ -562,10 +602,10 @@ switch ( ${sysname} )
 	    alias precmd 'source ${OPENCMISS_ROOT}/utilities/scripts/opencmiss_developer_gitprompt.csh'
 	endif
 	
-	setenv LIBAPI 
-	setenv SYSLIBAPI
-	setenv BINAPI
-	setenv INTELAPI
+	unsetenv LIBAPI 
+	unsetenv SYSLIBAPI
+	unsetenv BINAPI
+	unsetenv INTELAPI
 	breaksw
     default:
         echo "OpenCMISS: System name of ${sysname} is unknown."
