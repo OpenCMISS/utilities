@@ -542,7 +542,7 @@ case $sysname in
 
 	# Setup python path for OpenCMISS
 	if [ $OPENCMISS_SETUP_PYTHONPATH == true ]; then
-	    if [ ! $?OPENCMISS_PYTHON_VERSION ]; then
+	    if [ ! $OPENCMISS_PYTHON_VERSION ]; then
 		export OPENCMISS_PYTHON_VERSION=2.7
 	    fi
 	    export OPENCMISS_PYTHON_PATH=$OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_MPI/lib/python$OPENCMISS_PYTHON_VERSION/$OPENCMISS_BUILD_TYPE_ARCHPATH/opencmiss.iron
