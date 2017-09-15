@@ -542,7 +542,7 @@ case $sysname in
 
 	# Setup python path for OpenCMISS
 	if [ $OPENCMISS_SETUP_PYTHONPATH == true ]; then
-	    if [ ! $?OPENCMISS_PYTHON_VERSION ]; then
+	    if [ ! $OPENCMISS_PYTHON_VERSION ]; then
 		export OPENCMISS_PYTHON_VERSION=2.7
 	    fi
 	    export OPENCMISS_PYTHON_PATH=$OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_MPI/lib/python$OPENCMISS_PYTHON_VERSION/$OPENCMISS_BUILD_TYPE_ARCHPATH/opencmiss.iron
@@ -589,7 +589,23 @@ case $sysname in
 	
 	# Setup git prompt for OpenCMISS
 	if [ ${OPENCMISS_SETUP_GITPROMPT} == true ]; then
-	    alias precmd='. $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh'
+	    if [ -r $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh ]; then
+		. $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh
+		
+		# Prompt variables
+		export PROMPT_BEFORE="\[\033[34m\]\u@\h \[\033[37m\]\w\[\033[0m\]"
+		export PROMPT_AFTER=": "
+		
+		# Prompt command
+		export PROMPT_COMMAND='__git_ps1 "$PROMPT_BEFORE" "$PROMPT_AFTER"'
+		
+		# Git prompt features (read ~/.git-prompt.sh for reference)
+		export GIT_PS1_SHOWDIRTYSTATE="true"
+		export GIT_PS1_SHOWSTASHSTATE="true"
+		export GIT_PS1_SHOWUNTRACKEDFILES="true"
+		export GIT_PS1_SHOWUPSTREAM="auto"
+		export GIT_PS1_SHOWCOLORHINTS="true"
+	    fi
 	fi
 	
 	unset LIBAPI 
