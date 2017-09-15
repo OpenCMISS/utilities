@@ -589,7 +589,23 @@ case $sysname in
 	
 	# Setup git prompt for OpenCMISS
 	if [ ${OPENCMISS_SETUP_GITPROMPT} == true ]; then
-	    alias precmd='. $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh'
+	    if [ -r $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh ]; then
+		. $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh
+		
+		# Prompt variables
+		export PROMPT_BEFORE="\[\033[34m\]\u@\h \[\033[37m\]\w\[\033[0m\]"
+		export PROMPT_AFTER=": "
+		
+		# Prompt command
+		export PROMPT_COMMAND='__git_ps1 "$PROMPT_BEFORE" "$PROMPT_AFTER"'
+		
+		# Git prompt features (read ~/.git-prompt.sh for reference)
+		export GIT_PS1_SHOWDIRTYSTATE="true"
+		export GIT_PS1_SHOWSTASHSTATE="true"
+		export GIT_PS1_SHOWUNTRACKEDFILES="true"
+		export GIT_PS1_SHOWUPSTREAM="auto"
+		export GIT_PS1_SHOWCOLORHINTS="true"
+	    fi
 	fi
 	
 	unset LIBAPI 
