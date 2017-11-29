@@ -142,6 +142,7 @@ case $sysname in
 	    case $OPENCMISS_ARCHNAME in
 	      'i686-linux')
 	        export LIBAPI=lib
+
 	        export SYSLIBAPI=lib
                 export BINAPI=bin
 		export INTELAPI=ia32
@@ -195,7 +196,7 @@ case $sysname in
 
 	#Setup intel compilers if defined
 	if [ $OPENCMISS_SETUP_INTEL == true ]; then
-	    if [ ! $?INTEL_ROOT ]; then
+	    if [ ! $INTEL_ROOT ]; then
 		export INTEL_ROOT=/opt/intel
 	    fi
 	    #Add in intel compilers if defined
