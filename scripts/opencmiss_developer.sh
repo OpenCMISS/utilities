@@ -242,7 +242,7 @@ case $sysname in
 
 	if [ $OPENCMISS_SETUP_TOTALVIEW == true ]; then
 	    if [ ! $TOTALVIEW_PATH ]; then
-		export TOTALVIEW_PATH=/opt/toolworks/
+		export TOTALVIEW_PATH=/opt/toolworks
 	    fi
 	    if [ ! $TOTALVIEW_VERSION ]; then
 		export TOTALVIEW_VERSION=2017.1.21

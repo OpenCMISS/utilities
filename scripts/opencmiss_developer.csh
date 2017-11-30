@@ -242,7 +242,7 @@ switch ( ${sysname} )
 
 	if ( ${OPENCMISS_SETUP_TOTALVIEW} == true ) then
 	    if ( ! $?TOTALVIEW_PATH ) then
-		setenv TOTALVIEW_PATH /opt/toolworks/
+		setenv TOTALVIEW_PATH /opt/toolworks
 	    endif
 	    if ( ! $?TOTALVIEW_VERSION ) then
 		setenv TOTALVIEW_VERSION 2017.1.21
