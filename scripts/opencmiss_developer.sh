@@ -44,7 +44,7 @@ if [ ! $OPENCMISS_SETUP_GITPROMPT ]; then
     export OPENCMISS_SETUP_GITPROMPT=true
 fi
 if [ ! $OPENCMISS_MPI_BUILD_TYPE ]; then
-    export OPENCMISS_MPI_BUILD_TYPE=release
+    export OPENCMISS_MPI_BUILD_TYPE=system
 fi
 if [ ! $OPENCMISS_BUILD_TYPE ]; then
     export OPENCMISS_BUILD_TYPE=release
@@ -221,6 +221,12 @@ case $sysname in
 			fi
 		    else
 			#Older version of intel compilers
+			if [ ! $INTEL_COMPILER_VERSION ]; then
+			    export INTEL_COMPILER_VERSION=1.0
+			fi
+			if [ ! $INTEL_COMPILER_BUILD ]; then
+			    export INTEL_COMPILER_BUILD=1.0
+			fi
 			if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh" ]; then
 			    . $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh $INTELAPI
 			fi
@@ -388,12 +394,32 @@ case $sysname in
 		;;
 	      'mpich')
 		export MPI_STRING=mpich
+		case $OPENCMISS_LINUX_DISTRIBUTION in
+		  'fedora')
+		    #Fedora doesn't include mpich in the path by default
+		    if [ -z "$PATH" ]; then
+			export PATH=/usr/$LIBAPI/mpich/bin
+		    else
+			export PATH=/usr/$LIBAPI/mpich/bin:$PATH
+		    fi
+		    ;;
+		esac
 		;;
 	      'mpich2')
 		export MPI_STRING=mpich2
 		;;
 	      'openmpi')
 		export MPI_STRING=openmpi
+		case $OPENCMISS_LINUX_DISTRIBUTION in
+		  'fedora')
+		    #Fedora doesn't include openmpi in the path by default
+		    if [ -z "$PATH" ]; then
+			export PATH=/usr/$LIBAPI/openmpi/bin
+		    else
+			export PATH=/usr/$LIBAPI/openmpi/bin:$PATH
+		    fi
+		    ;;
+		esac
 		;;
 	      'mvapich2')
 		export MPI_STRING=mvapich2
@@ -465,6 +491,9 @@ case $sysname in
 		;;
 	      'relwithdebinfo')
 		export MPI_BUILD_TYPE_STRING=_relwithdebinfo
+		;;
+	      'system')
+		export MPI_BUILD_TYPE_STRING=_system
 		;;
 	      *)
 		echo "OpenCMISS: OPENCMISS_MPI_BUILD_TYPE of $OPENCMISS_MPI_BUILD_TYPE is unknown."
