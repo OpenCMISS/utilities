@@ -313,7 +313,7 @@ case $sysname in
 		if [ $? == 0 ]; then
 		    export INTEL_ICC_MAJOR_VERSION=`icc --version | grep ICC | cut -c 11-12`
 		    export INTEL_ICC_MINOR_VERSION=`icc --version | grep ICC | cut -c 14`
-		    export C_COMPILER_STRING intel-C$INTEL_ICC_MAJOR_VERSION.$INTEL_ICC_MINOR_VERSION
+		    export C_COMPILER_STRING=intel-C$INTEL_ICC_MAJOR_VERSION.$INTEL_ICC_MINOR_VERSION
 		    unset INTEL_ICC_MAJOR_VERSION    
 		    unset INTEL_ICC_MINOR_VERSION    
 		else
