@@ -406,6 +406,11 @@ switch ( ${sysname} )
 			    else
 				setenv PATH /usr/${LIBAPI}/mpich/bin:${PATH}
 			    endif
+			    if ( ! $?LD_LIBRARY_PATH ) then
+				setenv LD_LIBRARY_PATH /usr/${LIBAPI}/mpich/lib
+			    else
+				setenv LD_LIBRARY_PATH /usr/${LIBAPI}/mpich/lib:${LD_LIBRARY_PATH}
+			    endif
 			    breaksw
 		    endsw
 		    breaksw
@@ -418,6 +423,11 @@ switch ( ${sysname} )
 				setenv PATH /usr/${LIBAPI}/openmpi/bin
 			    else
 				setenv PATH /usr/${LIBAPI}/openmpi/bin:${PATH}
+			    endif
+			    if ( ! $?LD_LIBRARY_PATH ) then
+				setenv LD_LIBRARY_PATH /usr/${LIBAPI}/openmpi/lib
+			    else
+				setenv LD_LIBRARY_PATH /usr/${LIBAPI}/openmpi/lib:${LD_LIBRARY_PATH}
 			    endif
 			    breaksw
 		    endsw
