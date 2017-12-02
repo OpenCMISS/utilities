@@ -45,7 +45,7 @@ if ( ! $?OPENCMISS_SETUP_GITPROMPT ) then
     setenv OPENCMISS_SETUP_GITPROMPT true
 endif
 if ( ! $?OPENCMISS_MPI_BUILD_TYPE ) then
-    setenv OPENCMISS_MPI_BUILD_TYPE release
+    setenv OPENCMISS_MPI_BUILD_TYPE system
 endif
 if ( ! $?OPENCMISS_BUILD_TYPE ) then
     setenv OPENCMISS_BUILD_TYPE release
@@ -221,6 +221,13 @@ switch ( ${sysname} )
 			    source ${INTEL_ROOT}/mkl/bin/mklvars.csh ${INTELAPI}
 			endif
 		    else
+			#Older version of intel compilers
+			if ( ! $?INTEL_COMPILER_VERSION ) then
+			    setenv INTEL_COMPILER_VERSION 1.0
+			endif	
+			if ( ! $?INTEL_COMPILER_BUILD ) then
+			    setenv INTEL_COMPILER_BUILD 1.0
+			endif	
 			if ( -r "${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh" ) then
 			    source ${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh ${INTELAPI}
 			endif
@@ -391,9 +398,39 @@ switch ( ${sysname} )
 		    breaksw
 		case mpich2:
 		    setenv MPI_STRING mpich2
+		    switch ( ${OPENCMISS_LINUX_DISTRIBUTION} )
+			case fedora:
+			    #Fedora doesn't include mpich in the path by default
+			    if ( ! $?PATH ) then
+				setenv PATH /usr/${LIBAPI}/mpich/bin
+			    else
+				setenv PATH /usr/${LIBAPI}/mpich/bin:${PATH}
+			    endif
+			    if ( ! $?LD_LIBRARY_PATH ) then
+				setenv LD_LIBRARY_PATH /usr/${LIBAPI}/mpich/lib
+			    else
+				setenv LD_LIBRARY_PATH /usr/${LIBAPI}/mpich/lib:${LD_LIBRARY_PATH}
+			    endif
+			    breaksw
+		    endsw
 		    breaksw
 		case openmpi:
 		    setenv MPI_STRING openmpi
+		    switch ( ${OPENCMISS_LINUX_DISTRIBUTION} )
+			case fedora:
+			    #Fedora doesn't include openmpi in the path by default
+			    if ( ! $?PATH ) then
+				setenv PATH /usr/${LIBAPI}/openmpi/bin
+			    else
+				setenv PATH /usr/${LIBAPI}/openmpi/bin:${PATH}
+			    endif
+			    if ( ! $?LD_LIBRARY_PATH ) then
+				setenv LD_LIBRARY_PATH /usr/${LIBAPI}/openmpi/lib
+			    else
+				setenv LD_LIBRARY_PATH /usr/${LIBAPI}/openmpi/lib:${LD_LIBRARY_PATH}
+			    endif
+			    breaksw
+		    endsw
 		    breaksw      
 		case mvapich2:
 		    setenv MPI_STRING mvapich2
@@ -465,6 +502,9 @@ switch ( ${sysname} )
 		    breaksw
 		case relwithdebinfo:
 		    setenv MPI_BUILD_TYPE_STRING _relwithdebinfo
+		    breaksw
+		case system:
+		    setenv MPI_BUILD_TYPE_STRING _system
 		    breaksw
 		default:
 		    echo "OpenCMISS: OPENCMISS_MPI_BUILD_TYPE of ${OPENCMISS_MPI_BUILD_TYPE} is unknown."
