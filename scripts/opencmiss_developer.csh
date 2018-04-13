@@ -449,7 +449,10 @@ switch ( ${sysname} )
 			if ( -r "${INTEL_ROOT}/itac_latest/bin/itacvars.csh" ) then
 			    #source ${INTEL_ROOT}/itac_latest/bin/itacvars.csh
 			endif
-		    else
+		   else
+			if ( ! $?INTEL_TRACE_COLLECTOR_VERSION ) then
+			    setenv INTEL_TRACE_COLLECTOR_VERSION 1.2.3
+			endif
 			#Old Itac directory structure
 			if ( -r "${INTEL_ROOT}/itac/${INTEL_TRACE_COLLECTOR_VERSION}/bin/itacvars.csh" ) then
 			    source ${INTEL_ROOT}/itac/${INTEL_TRACE_COLLECTOR_VERSION}/bin/itacvars.csh impi4
@@ -471,6 +474,9 @@ switch ( ${sysname} )
 				    source ${INTEL_ROOT}/impi_latest/${BINAPI}/mpivars.csh
 				endif
 			    else
+				if ( ! $?INTEL_MPI_VERSION ) then
+				    setenv INTEL_MPI_VERSION 1.2.3
+				endif
 				#Old Intel MPI directory strucutre. Use specific version
 				if ( -r "${INTEL_ROOT}/impi/${INTEL_MPI_VERSION}/${BINAPI}/mpivars.csh" ) then
 				    source ${INTEL_ROOT}/impi/${INTEL_MPI_VERSION}/${BINAPI}/mpivars.csh
