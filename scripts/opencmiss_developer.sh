@@ -91,6 +91,9 @@ case $sysname in
             elif [ -n "`grep "Scientific Linux" /etc/redhat-release`" ] ; then
 		export OPENCMISS_LINUX_DISTRIBUTION=scientificlinux
 	        export OPENCMISS_SCILINUX_RELEASE=`cat /etc/redhat-release | cut -f4 -d" " | cut -f1 -d"."`
+            elif [ -n "`grep "CentOS" /etc/redhat-release`" ] ; then
+		export OPENCMISS_LINUX_DISTRIBUTION=centos
+	        export OPENCMISS_CENTOS_RELEASE=`cat /etc/redhat-release | cut -f4 -d" " | cut -f1 -d"."`
             else 
 		echo "OpenCMISS: Can not determine Linux distribution from /etc/redhat-release."
 		export OPENCMISS_LINUX_DISTRIBUTION=unknown

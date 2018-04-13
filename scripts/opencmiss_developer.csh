@@ -93,6 +93,9 @@ switch ( ${sysname} )
             else if ( `grep "Scientific Linux" /etc/redhat-release` !~ "" ) then
 		setenv OPENCMISS_LINUX_DISTRIBUTION scientificlinux
 	        setenv OPENCMISS_SCILINUX_RELEASE `cat /etc/fedora-release | cut -f4 -d" " | cut -f1 -d"."`
+            else if ( `grep "CentOS" /etc/redhat-release` !~ "" ) then
+		setenv OPENCMISS_LINUX_DISTRIBUTION centos
+	        setenv OPENCMISS_CENTOS_RELEASE `cat /etc/fedora-release | cut -f4 -d" " | cut -f1 -d"."`
             else 
 		echo "OpenCMISS: Can not determine Linux distribution from /etc/redhat-release."
 		setenv OPENCMISS_LINUX_DISTRIBUTION unknown
