@@ -633,6 +633,9 @@ case $sysname in
 		    export BSTINPUTS=.:$OPENCMISS_ROOT/documentation/notes/references//:$BSTINPUTS:
 		fi
 	    fi
+	    if [ ! -e ~/texTextPreamble.ini ]; then
+		ln -s $OPENCMISS_ROOT/documentation/notes/latex/texTextPreamble.ini ~/texTextPreamble.ini
+	    fi
 	    alias latexmake='./Latex_make.sh'
 	fi
 	

@@ -642,6 +642,9 @@ switch ( ${sysname} )
 		    setenv BSTINPUTS .:${OPENCMISS_ROOT}/documentation/notes/references//:${BSTINPUTS}:
 		endif
 	    endif
+	    if ( ! -e ~/texTextPreamble.ini ) then
+		ln -s ${OPENCMISS_ROOT}/documentation/notes/latex/texTextPreamble.ini ~/texTextPreamble.ini
+	    endif
 	    alias latexmake ./Latex_make.sh
 	endif
 	
