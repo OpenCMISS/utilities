@@ -408,7 +408,7 @@ case $sysname in
 		    if [ -z "$LD_LIBRARY_PATH" ]; then
 			export LD_LIBRARY_PATH=/usr/$LIBAPI/mpich/lib
 		    else
-			export LD_LIBRRAY_PATH=/usr/$LIBAPI/mpich/lib:$LD_LIBRARY_PATH
+			export LD_LIBRARY_PATH=/usr/$LIBAPI/mpich/lib:$LD_LIBRARY_PATH
 		    fi
 		    ;;
 		esac
@@ -429,7 +429,7 @@ case $sysname in
 		    if [ -z "$LD_LIBRARY_PATH" ]; then
 			export LD_LIBRARY_PATH=/usr/$LIBAPI/openmpi/lib
 		    else
-			export LD_LIBRRAY_PATH=/usr/$LIBAPI/openmpi/lib:$LD_LIBRARY_PATH
+			export LD_LIBRARY_PATH=/usr/$LIBAPI/openmpi/lib:$LD_LIBRARY_PATH
 		    fi
 		    ;;
 		esac
@@ -449,6 +449,9 @@ case $sysname in
 			. $INTEL_ROOT/itac_latest/bin/itacvars.sh
 		    fi
 		else
+		    if [ ! $INTEL_TRACE_COLLECTOR_VERSION ]; then
+			export INTEL_TRACE_COLLECTOR_VERSION=1.2.3
+		    fi
 		    #Old Itac directory structure
 		    if [ -r "$INTEL_ROOT/itac/$INTEL_TRACE_COLLECTOR_VERSION/bin/itacvars.sh" ]; then
 			. $INTEL_ROOT/itac/$INTEL_TRACE_COLLECTOR_VERSION/bin/itacvars.sh impi4
@@ -470,6 +473,9 @@ case $sysname in
 				    . $INTEL_ROOT/impi_latest/$BINAPI/mpivars.sh
 			    fi
 			else
+			    if [ ! $INTEL_MPI_VERSION ]; then
+				export INTEL_MPI_VERSION=1.2.3
+			    fi
 			    #Old Intel MPI directory strucutre. Use specific version
 			    if [ -r "$INTEL_ROOT/impi/$INTEL_MPI_VERSION/$BINAPI/mpivars.sh" ]; then
 				. $INTEL_ROOT/impi/$INTEL_MPI_VERSION/$BINAPI/mpivars.sh
@@ -626,6 +632,9 @@ case $sysname in
 		else
 		    export BSTINPUTS=.:$OPENCMISS_ROOT/documentation/notes/references//:$BSTINPUTS:
 		fi
+	    fi
+	    if [ ! -e ~/texTextPreamble.ini ]; then
+		ln -s $OPENCMISS_ROOT/documentation/notes/latex/texTextPreamble.ini ~/texTextPreamble.ini
 	    fi
 	    alias latexmake='./Latex_make.sh'
 	fi
