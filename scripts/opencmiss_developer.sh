@@ -408,7 +408,7 @@ case $sysname in
 		    if [ -z "$LD_LIBRARY_PATH" ]; then
 			export LD_LIBRARY_PATH=/usr/$LIBAPI/mpich/lib
 		    else
-			export LD_LIBRRAY_PATH=/usr/$LIBAPI/mpich/lib:$LD_LIBRARY_PATH
+			export LD_LIBRARY_PATH=/usr/$LIBAPI/mpich/lib:$LD_LIBRARY_PATH
 		    fi
 		    ;;
 		esac
@@ -429,7 +429,7 @@ case $sysname in
 		    if [ -z "$LD_LIBRARY_PATH" ]; then
 			export LD_LIBRARY_PATH=/usr/$LIBAPI/openmpi/lib
 		    else
-			export LD_LIBRRAY_PATH=/usr/$LIBAPI/openmpi/lib:$LD_LIBRARY_PATH
+			export LD_LIBRARY_PATH=/usr/$LIBAPI/openmpi/lib:$LD_LIBRARY_PATH
 		    fi
 		    ;;
 		esac
