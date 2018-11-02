@@ -371,6 +371,9 @@ switch ( ${sysname} )
 		case scorep:
 		    setenv OPENCMISS_INSTRUMENTATION_ARCHPATH -scorep
 		    breaksw
+		case gprof:
+		    setenv OPENCMISS_INSTRUMENTATION_ARCHPATH -gprof      
+		    breaksw
 		case vtune:
 		    setenv OPENCMISS_INSTRUMENTATION_ARCHPATH -vtune      
 		    breaksw

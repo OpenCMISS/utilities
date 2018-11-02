@@ -372,6 +372,9 @@ case $sysname in
 	      'scorep')
 		export OPENCMISS_INSTRUMENTATION_ARCHPATH=-scorep
 		;;
+	      'gprof')
+		export OPENCMISS_INSTRUMENTATION_ARCHPATH=-gprof      
+		;;
 	      'vtune')
 		export OPENCMISS_INSTRUMENTATION_ARCHPATH=-vtune      
 		;;
