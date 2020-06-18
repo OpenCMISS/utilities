@@ -256,7 +256,7 @@ switch ( ${sysname} )
 		if ( ! $?TOTALVIEW_PATH ) then
 		    setenv TOTALVIEW_PATH1 `which totalview | cut -f2 -d'/'`
 		    setenv TOTALVIEW_PATH2 `which totalview | cut -f3 -d'/'`
-		    setenv TOTALVIEW_PATH $TOTALVIEW_PATH1/$TOTALVIEW_PATH2
+		    setenv TOTALVIEW_PATH ${TOTALVIEW_PATH1}/${TOTALVIEW_PATH2}
 		    unsetenv TOTALVIEW_PATH1
 		    unsetenv TOTALVIEW_PATH2
 		endif
@@ -267,37 +267,55 @@ switch ( ${sysname} )
 		if ( ! $?TOTALVIEW_PATH ) then
 		    setenv TOTALVIEW_PATH /opt/toolworks
 		endif
-		if ( ! $?TOTALVIEW_VERSION ) then
-		    setenv TOTALVIEW_VERSION1 `ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f2 -d.`
-		    setenv TOTALVIEW_VERSION2 `ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f3 -d.`
-		    setenv TOTALVIEW_VERSION3 `ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f4 -d.`
-		    setenv TOTALVIEW_VERSION $TOTALVIEW_VERSION1.$TOTALVIEW_VERSION2.$TOTALVIEW_VERSION3
-		    unsetenv TOTALVIEW_VERSION1
-		    unsetenv TOTALVIEW_VERSION2
-		    unsetenv TOTALVIEW_VERSION3
+		if ( -d ${TOTALVIEW_PATH} ) then    
+		    if ( ! $?TOTALVIEW_VERSION ) then
+			setenv TOTALVIEW_VERSION1 `ls ${TOTALVIEW_PATH} | grep -i totalview | tail -1 | cut -f2 -d.`
+			if ( ${TOTALVIEW_VERSION1} != "" ) then    
+			    setenv TOTALVIEW_VERSION2 `ls ${TOTALVIEW_PATH} | grep -i totalview | tail -1 | cut -f3 -d.`
+			    if ( ${TOTALVIEW_VERSION2} != "" ) then
+				setenv TOTALVIEW_VERSION3 `ls ${TOTALVIEW_PATH} | grep -i totalview | tail -1 | cut -f4 -d.`
+				if ( ${TOTALVIEW_VERSION3} != "" ) then    
+					setenv TOTALVIEW_VERSION ${TOTALVIEW_VERSION1}.${TOTALVIEW_VERSION2}.${TOTALVIEW_VERSION3}
+				endif
+				unsetenv TOTALVIEW_VERSION3
+			    endif
+			    unsetenv TOTALVIEW_VERSION2
+			endif
+			unsetenv TOTALVIEW_VERSION1
+		    endif
 		endif
 	    endif
-	    if ( ! $?FLEXLM_VERSION ) then
-		setenv FLEXLM_VERSION1 `ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f2 -d'-'`
-		setenv FLEXLM_VERSION2 `ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f3 -d'-'`
-		setenv FLEXLM_VERSION $FLEXLM_VERSION1-$FLEXLM_VERSION2
-		unsetenv FLEXLM_VERSION1
-		unsetenv FLEXLM_VERSION2
-	    endif
-	    #Add in totalview path
-	    if ( -d "${TOTALVIEW_PATH}/totalview.${TOTALVIEW_VERSION}/bin" ) then
-		if ( ! $?PATH ) then
-		    setenv PATH ${TOTALVIEW_PATH}/totalview.${TOTALVIEW_VERSION}/bin
-		else
-		    setenv PATH ${TOTALVIEW_PATH}/totalview.${TOTALVIEW_VERSION}/bin:${PATH}
+	    if ( -d ${TOTALVIEW_PATH} ) then
+		if ( ! $?FLEXLM_VERSION ) then
+		    setenv FLEXLM_VERSION1 `ls ${TOTALVIEW_PATH} | grep -i flexlm | tail -1 | cut -f2 -d'-'`
+		    if ( ${FLEXLM_VERSION1} != "" ) then
+			setenv FLEXLM_VERSION2 `ls ${TOTALVIEW_PATH} | grep -i flexlm | tail -1 | cut -f3 -d'-'`
+			if ( ${FLEXLM_VERSION2} != "" ) then    
+			    setenv FLEXLM_VERSION ${FLEXLM_VERSION1}-${FLEXLM_VERSION2}
+			endif	
+			unsetenv FLEXLM_VERSION1
+		    endif
+		    unsetenv FLEXLM_VERSION1
 		endif
-	    endif
-	    #Add in FlexLM path
-	    if ( -d "${TOTALVIEW_PATH}/flexlm-${FLEXLM_VERSION}" ) then
-		if ( ! $?LM_LICENSE_FILE ) then
-		    setenv LM_LICENSE_FILE ${TOTALVIEW_PATH}/flexlm-${FLEXLM_VERSION}
-		else
-		    setenv LM_LICENSE_FILE ${TOTALVIEW_PATH}/flexlm-${FLEXLM_VERSION}:${LM_LICENSE_FILE}
+		#Add in totalview path
+		if ( $?TOTALVIEW_VERSION ) then
+		    if ( -d "${TOTALVIEW_PATH}/totalview.${TOTALVIEW_VERSION}/bin" ) then
+			if ( ! $?PATH ) then
+			    setenv PATH ${TOTALVIEW_PATH}/totalview.${TOTALVIEW_VERSION}/bin
+		        else
+			    setenv PATH ${TOTALVIEW_PATH}/totalview.${TOTALVIEW_VERSION}/bin:${PATH}
+			endif
+		    endif
+		endif	
+		#Add in FlexLM path
+		if ( $?FLEXLM_VERSION ) then
+		    if ( -d "${TOTALVIEW_PATH}/flexlm-${FLEXLM_VERSION}" ) then
+			if ( ! $?LM_LICENSE_FILE ) then
+			    setenv LM_LICENSE_FILE ${TOTALVIEW_PATH}/flexlm-${FLEXLM_VERSION}
+			else
+			    setenv LM_LICENSE_FILE ${TOTALVIEW_PATH}/flexlm-${FLEXLM_VERSION}:${LM_LICENSE_FILE}
+			endif
+		    endif
 		endif
 	    endif
 	endif	
