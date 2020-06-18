@@ -251,14 +251,38 @@ switch ( ${sysname} )
 	endif
 
 	if ( ${OPENCMISS_SETUP_TOTALVIEW} == true ) then
-	    if ( ! $?TOTALVIEW_PATH ) then
-		setenv TOTALVIEW_PATH /opt/toolworks
-	    endif
-	    if ( ! $?TOTALVIEW_VERSION ) then
-		setenv TOTALVIEW_VERSION 2017.1.21
+	    which totalview >& /dev/null
+	    if ( $? == 0 ) then
+		if ( ! $?TOTALVIEW_PATH ) then
+		    setenv TOTALVIEW_PATH1 `which totalview | cut -f2 -d'/'`
+		    setenv TOTALVIEW_PATH2 `which totalview | cut -f3 -d'/'`
+		    setenv TOTALVIEW_PATH $TOTALVIEW_PATH1/$TOTALVIEW_PATH2
+		    unsetenv TOTALVIEW_PATH1
+		    unsetenv TOTALVIEW_PATH2
+		endif
+		if ( ! $?TOTALVIEW_VERSION ) then
+		    setenv TOTALVIEW_VERSION `totalview -v | cut -f4 -d' '`
+		endif
+	    else
+		if ( ! $?TOTALVIEW_PATH ) then
+		    setenv TOTALVIEW_PATH /opt/toolworks
+		endif
+		if ( ! $?TOTALVIEW_VERSION ) then
+		    setenv TOTALVIEW_VERSION1 `ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f2 -d.`
+		    setenv TOTALVIEW_VERSION2 `ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f3 -d.`
+		    setenv TOTALVIEW_VERSION3 `ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f4 -d.`
+		    setenv TOTALVIEW_VERSION $TOTALVIEW_VERSION1.$TOTALVIEW_VERSION2.$TOTALVIEW_VERSION3
+		    unsetenv TOTALVIEW_VERSION1
+		    unsetenv TOTALVIEW_VERSION2
+		    unsetenv TOTALVIEW_VERSION3
+		endif
 	    endif
 	    if ( ! $?FLEXLM_VERSION ) then
-		setenv FLEXLM_VERSION 11.13.1-1
+		setenv FLEXLM_VERSION1 `ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f2 -d'-'`
+		setenv FLEXLM_VERSION2 `ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f3 -d'-'`
+		setenv FLEXLM_VERSION $FLEXLM_VERSION1-$FLEXLM_VERSION2
+		unsetenv FLEXLM_VERSION1
+		unsetenv FLEXLM_VERSION2
 	    endif
 	    #Add in totalview path
 	    if ( -d "${TOTALVIEW_PATH}/totalview.${TOTALVIEW_VERSION}/bin" ) then
@@ -596,7 +620,15 @@ switch ( ${sysname} )
 	# Setup python path for OpenCMISS
 	if ( ${OPENCMISS_SETUP_PYTHONPATH} == true ) then
 	    if ( ! $?OPENCMISS_PYTHON_VERSION ) then
-		setenv OPENCMISS_PYTHON_VERSION 2.7
+		which python >& /dev/null		
+		if ( $? == 0 ) then
+		    setenv OPENCMISS_PYTHON_MAJOR_VERSION `python --version | cut -f2 -d' ' | cut -f1 -d.`
+		    setenv OPENCMISS_PYTHON_MINOR_VERSION `python --version | cut -f2 -d' ' | cut -f2 -d.`
+		else
+		    setenv OPENCMISS_PYTHON_MAJOR_VERSION 2
+		    setenv OPENCMISS_PYTHON_MINOR_VERSION 7
+		endif
+		setenv OPENCMISS_PYTHON_VERSION ${OPENCMISS_PYTHON_MAJOR_VERSION}.${OPENCMISS_PYTHON_MINOR_VERSION}
 	    endif
 	    setenv OPENCMISS_PYTHON_PATH_OLD ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/python/${OPENCMISS_BUILD_TYPE_ARCHPATH}
 	    setenv OPENCMISS_PYTHON_PATH ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/lib/python${OPENCMISS_PYTHON_VERSION}/${OPENCMISS_BUILD_TYPE_ARCHPATH}/opencmiss.iron

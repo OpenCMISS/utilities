@@ -250,14 +250,38 @@ case $sysname in
 	fi
 
 	if [ $OPENCMISS_SETUP_TOTALVIEW == true ]; then
-	    if [ ! $TOTALVIEW_PATH ]; then
-		export TOTALVIEW_PATH=/opt/toolworks
-	    fi
-	    if [ ! $TOTALVIEW_VERSION ]; then
-		export TOTALVIEW_VERSION=2017.1.21
+	    which totalview >& /dev/null
+	    if [ $? == 0 ]; then
+		if [ ! $TOTALVIEW_PATH ]; then
+		    export TOTALVIEW_PATH1=`which totalview | cut -f2 -d'/'`
+		    export TOTALVIEW_PATH2=`which totalview | cut -f3 -d'/'`
+		    export TOTALVIEW_PATH=$TOTALVIEW_PATH1/$TOTALVIEW_PATH2
+		    unset TOTALVIEW_PATH1
+		    unset TOTALVIEW_PATH2
+		fi
+	        if [ ! $TOTALVIEW_VERSION ]; then
+		  export TOTALVIEW_VERSION=`totalview -v | cut -f4 -d' '`
+	        fi
+	    else
+		if [ ! $TOTALVIEW_PATH ]; then
+		    export TOTALVIEW_PATH=/opt/toolworks
+		fi
+		if [ ! $TOTALVIEW_VERSION ]; then
+		    export TOTALVIEW_VERSION1=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f2 -d.`
+		    export TOTALVIEW_VERSION2=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f3 -d.`
+		    export TOTALVIEW_VERSION3=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f4 -d.`
+		    export TOTALVIEW_VERSION=$TOTALVIEW_VERSION1.$TOTALVIEW_VERSION2.$TOTALVIEW_VERSION3
+		    unset TOTALVIEW_VERSION1
+		    unset TOTALVIEW_VERSION2
+		    unset TOTALVIEW_VERSION3
+		fi
 	    fi
 	    if [ ! $FLEXLM_VERSION ]; then
-		export FLEXLM_VERSION=11.13.1-1
+		export FLEXLM_VERSION1=`ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f2 -d'-'`
+		export FLEXLM_VERSION2=`ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f3 -d'-'`
+		export FLEXLM_VERSION=$FLEXLM_VERSION1-$FLEXLM_VERSION2
+		unset FLEXLM_VERSION1
+		unset FLEXLM_VERSION2
 	    fi
 	    #Add in totalview path
 	    if [ -d "$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin" ]; then
@@ -595,7 +619,15 @@ case $sysname in
 	# Setup python path for OpenCMISS
 	if [ $OPENCMISS_SETUP_PYTHONPATH == true ]; then
 	    if [ ! $OPENCMISS_PYTHON_VERSION ]; then
-		export OPENCMISS_PYTHON_VERSION=2.7
+		which python >& /dev/null
+		if [ $? == 0 ]; then
+		    export OPENCMISS_PYTHON_MAJOR_VERSION=`python --version | cut -f2 -d' ' | cut -f1 -d.`
+		    export OPENCMISS_PYTHON_MINOR_VERSION=`python --version | cut -f2 -d' ' | cut -f2 -d.`
+		else
+		    export OPENCMISS_PYTHON_MAJOR_VERSION=2
+		    export OPENCMISS_PYTHON_MINOR_VERSION=7
+		fi
+		export OPENCMISS_PYTHON_VERSION=$OPENCMISS_PYTHON_MAJOR_VERSION.$OPENCMISS_PYTHON_MINOR_VERSION
 	    fi
 	    export OPENCMISS_PYTHON_PATH=$OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_MPI/lib/python$OPENCMISS_PYTHON_VERSION/$OPENCMISS_BUILD_TYPE_ARCHPATH/opencmiss.iron
 	    if [ -d $OPENCMISS_PYTHON_PATH ]; then
