@@ -266,37 +266,55 @@ case $sysname in
 		if [ ! $TOTALVIEW_PATH ]; then
 		    export TOTALVIEW_PATH=/opt/toolworks
 		fi
-		if [ ! $TOTALVIEW_VERSION ]; then
-		    export TOTALVIEW_VERSION1=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f2 -d.`
-		    export TOTALVIEW_VERSION2=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f3 -d.`
-		    export TOTALVIEW_VERSION3=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f4 -d.`
-		    export TOTALVIEW_VERSION=$TOTALVIEW_VERSION1.$TOTALVIEW_VERSION2.$TOTALVIEW_VERSION3
-		    unset TOTALVIEW_VERSION1
-		    unset TOTALVIEW_VERSION2
-		    unset TOTALVIEW_VERSION3
+		if [ -d $TOTALVIEW_PATH ]; then
+		    if [ ! $TOTALVIEW_VERSION ]; then
+			export TOTALVIEW_VERSION1=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f2 -d.`
+			if [ -n $TOTALVIEW_VERSION1 ]; then
+			    export TOTALVIEW_VERSION2=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f3 -d.`
+			    if [ -n $TOTALVIEW_VERSION2 ]; then
+				export TOTALVIEW_VERSION3=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f4 -d.`
+				if [ -n $TOTALVIEW_VERSION3 ]; then
+				    export TOTALVIEW_VERSION=$TOTALVIEW_VERSION1.$TOTALVIEW_VERSION2.$TOTALVIEW_VERSION3
+				fi
+				unset TOTALVIEW_VERSION3
+			    fi
+			    unset TOTALVIEW_VERSION2
+			fi
+			unset TOTALVIEW_VERSION1
+		    fi
 		fi
 	    fi
-	    if [ ! $FLEXLM_VERSION ]; then
-		export FLEXLM_VERSION1=`ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f2 -d'-'`
-		export FLEXLM_VERSION2=`ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f3 -d'-'`
-		export FLEXLM_VERSION=$FLEXLM_VERSION1-$FLEXLM_VERSION2
-		unset FLEXLM_VERSION1
-		unset FLEXLM_VERSION2
-	    fi
-	    #Add in totalview path
-	    if [ -d "$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin" ]; then
-		if [ -z "$PATH" ]; then
-		    export PATH=$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin
-		else
-		    export PATH=$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin:$PATH
+	    if [ -d $TOTALVIEW_PATH ]; then
+		if [ ! $FLEXLM_VERSION ]; then
+		    export FLEXLM_VERSION1=`ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f2 -d'-'`
+		    if [ -n $FLEXLM_VERSION1 ]; then
+			export FLEXLM_VERSION2=`ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f3 -d'-'`
+			if [ -n $FLEXLM_VERSION2 ]; then
+			    export FLEXLM_VERSION=$FLEXLM_VERSION1-$FLEXLM_VERSION2
+			fi
+			unset FLEXLM_VERSION1
+		    fi
+		    unset FLEXLM_VERSION1
 		fi
-	    fi
-	    #Add in FlexLM path
-	    if [ -d "$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION" ]; then
-		if [ -z "$LM_LICENSE_FILES" ]; then
-		    export LM_LICENSE_FILESPATH=$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION
-		else
-		    export LM_LICENSE_FILESPATH=$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION:$LM_LICENSE_FILES
+		#Add in totalview path
+		if [ $TOTALVIEW_VERSION ]; then
+		    if [ -d "$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin" ]; then
+			if [ -z "$PATH" ]; then
+			    export PATH=$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin
+			else
+			    export PATH=$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin:$PATH
+			fi
+		    fi
+		fi
+		#Add in FlexLM path
+		if [ $FLEXLM_VERSION ]; then
+		    if [ -d "$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION" ]; then
+			if [ -z "$LM_LICENSE_FILES" ]; then
+			    export LM_LICENSE_FILESPATH=$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION
+			else
+			    export LM_LICENSE_FILESPATH=$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION:$LM_LICENSE_FILES
+			fi
+		    fi
 		fi
 	    fi
 	fi
