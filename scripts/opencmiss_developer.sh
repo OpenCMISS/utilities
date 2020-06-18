@@ -398,7 +398,7 @@ case $sysname in
 		  'ibm')
 		    ;;
 		  *)
-		    echo "OpenCMISS: OPENCMISS_TOOLCHAIN of ${OPENCMISS_TOOLCHAIN} is unknown."
+		    echo "OpenCMISS: OPENCMISS_TOOLCHAIN of $OPENCMISS_TOOLCHAIN is unknown."
 		    ;;
 		esac
 	    else
@@ -424,7 +424,7 @@ case $sysname in
 		export OPENCMISS_INSTRUMENTATION_ARCHPATH='' 
 		;;
 	      *)
-		echo "OpenCMISS: OPENCMISS_INSTRUMENTATION of ${OPENCMISS_INSTRUMENTATION} is unknown."
+		echo "OpenCMISS: OPENCMISS_INSTRUMENTATION of $OPENCMISS_INSTRUMENTATION is unknown."
 		export OPENCMISS_INSTRUMENTATION_ARCHPATH=-unknown
 	    esac
 	fi
@@ -658,7 +658,7 @@ case $sysname in
 	fi
 
 	# Setup LaTeX paths for OpenCMISS
-	if [ ${OPENCMISS_SETUP_LATEX} == true ]; then
+	if [ $OPENCMISS_SETUP_LATEX == true ]; then
 	    if [ -d $OPENCMISS_ROOT/documentation/notes/latex ]; then
 		if [ -d $OPENCMISS_ROOT/documentation/notes/figures ]; then
 		    if [ ! $?TEXINPUTS ]; then
@@ -693,7 +693,7 @@ case $sysname in
 	fi
 	
 	# Setup git prompt for OpenCMISS
-	if [ ${OPENCMISS_SETUP_GITPROMPT} == true ]; then
+	if [ $OPENCMISS_SETUP_GITPROMPT == true ]; then
 	    if [ -r $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh ]; then
 		. $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh
 		
