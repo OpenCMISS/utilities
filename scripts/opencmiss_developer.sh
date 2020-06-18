@@ -292,7 +292,7 @@ case $sysname in
 			if [ -n $FLEXLM_VERSION2 ]; then
 			    export FLEXLM_VERSION=$FLEXLM_VERSION1-$FLEXLM_VERSION2
 			fi
-			unset FLEXLM_VERSION1
+			unset FLEXLM_VERSION2
 		    fi
 		    unset FLEXLM_VERSION1
 		fi

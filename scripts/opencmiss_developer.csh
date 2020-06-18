@@ -293,7 +293,7 @@ switch ( ${sysname} )
 			if ( ${FLEXLM_VERSION2} != "" ) then    
 			    setenv FLEXLM_VERSION ${FLEXLM_VERSION1}-${FLEXLM_VERSION2}
 			endif	
-			unsetenv FLEXLM_VERSION1
+			unsetenv FLEXLM_VERSION2
 		    endif
 		    unsetenv FLEXLM_VERSION1
 		endif
