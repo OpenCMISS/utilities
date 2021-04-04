@@ -201,53 +201,64 @@ switch ( ${sysname} )
 	#Setup intel compilers if defined
 	if ( ${OPENCMISS_SETUP_INTEL} == true ) then
 	    if ( ! $?INTEL_ROOT ) then
-		setenv INTEL_ROOT /opt/intel
-	    endif	
-	    if ( -r "${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh" ) then
-		source ${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh ${INTELAPI}
-		if ( -r "${INTEL_ROOT}/compilers_and_libraries/linux/mkl/bin/mklvars.csh" ) then
-		    source ${INTEL_ROOT}/compilers_and_libraries/linux/mkl/bin/mklvars.csh ${INTELAPI}
+		if ( -d "/opt/intel/oneapi" ) then
+		    #New oneAPI intel setup
+		    setenv INTEL_ROOT /opt/intel/oneapi
+		else
+		    setenv INTEL_ROOT /opt/intel
 		endif
+	    endif	
+	    #Add in intel compilers if defined
+	    if [ -r "$INTEL_ROOT/setvars.sh" ]; then
+		#New oneAPI intel setup
+		echo "OpenCMISS: Cannot set up new Intel oneAPI variabls with csh at the moment."
 	    else
-		#Add in the newer version of the compilers
-		if ( -r "${INTEL_ROOT}/composerxe/bin/compilervars.csh" ) then
-		    source ${INTEL_ROOT}/composerxe/bin/compilervars.csh ${INTELAPI}
-		    if ( -r "${INTEL_ROOT}/mkl/bin/mklvars.csh" ) then
-			source ${INTEL_ROOT}/mkl/bin/mklvars.csh ${INTELAPI}
+		if ( -r "${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh" ) then
+		    source ${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh ${INTELAPI}
+		    if ( -r "${INTEL_ROOT}/compilers_and_libraries/linux/mkl/bin/mklvars.csh" ) then
+			source ${INTEL_ROOT}/compilers_and_libraries/linux/mkl/bin/mklvars.csh ${INTELAPI}
 		    endif
 		else
-		    #Add in intel compilers if defined
-		    if ( -r "${INTEL_ROOT}/bin/compilervars.csh" ) then
-			#Newer version of intel compilers
-			source ${INTEL_ROOT}/bin/compilervars.csh ${INTELAPI}
+		    #Add in the newer version of the compilers
+		    if ( -r "${INTEL_ROOT}/composerxe/bin/compilervars.csh" ) then
+			source ${INTEL_ROOT}/composerxe/bin/compilervars.csh ${INTELAPI}
 			if ( -r "${INTEL_ROOT}/mkl/bin/mklvars.csh" ) then
 			    source ${INTEL_ROOT}/mkl/bin/mklvars.csh ${INTELAPI}
 			endif
 		    else
-			#Older version of intel compilers
-			if ( ! $?INTEL_COMPILER_VERSION ) then
-			    setenv INTEL_COMPILER_VERSION 1.0
-			endif	
-			if ( ! $?INTEL_COMPILER_BUILD ) then
-			    setenv INTEL_COMPILER_BUILD 1.0
-			endif	
-			if ( -r "${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh" ) then
-			    source ${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh ${INTELAPI}
-			endif
-			if ( -r "${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/iccvars.csh" ) then
-			    source ${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/iccvars.csh ${INTELAPI}
+			#Add in intel compilers if defined
+			if ( -r "${INTEL_ROOT}/bin/compilervars.csh" ) then
+			    #Newer version of intel compilers
+			    source ${INTEL_ROOT}/bin/compilervars.csh ${INTELAPI}
+			    if ( -r "${INTEL_ROOT}/mkl/bin/mklvars.csh" ) then
+				source ${INTEL_ROOT}/mkl/bin/mklvars.csh ${INTELAPI}
+			    endif
+			else
+			    #Older version of intel compilers
+			    if ( ! $?INTEL_COMPILER_VERSION ) then
+				setenv INTEL_COMPILER_VERSION 1.0
+			    endif	
+			    if ( ! $?INTEL_COMPILER_BUILD ) then
+				setenv INTEL_COMPILER_BUILD 1.0
+			    endif	
+			    if ( -r "${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh" ) then
+				source ${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh ${INTELAPI}
+			    endif
+			    if ( -r "${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/iccvars.csh" ) then
+				source ${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/iccvars.csh ${INTELAPI}
+			    endif
 			endif
 		    endif
 		endif
+		# Setup Intel advisor if it is installed
+		if ( -r "${INTEL_ROOT}/advisor/advixe-vars.csh" ) then
+		    source ${INTEL_ROOT}/advisor/advixe-vars.csh quiet
+		endif
+		# Setup Intel inspector if it is installed
+		if ( -r "${INTEL_ROOT}/inspector/inspxe-vars.csh" ) then
+		    source ${INTEL_ROOT}/inspector/inspxe-vars.csh quiet
+		endif
 	    endif
-	    # Setup Intel advisor if it is installed
-	    if ( -r "${INTEL_ROOT}/advisor/advixe-vars.csh" ) then
-		source ${INTEL_ROOT}/advisor/advixe-vars.csh quiet
-	    endif
- 	    # Setup Intel inspector if it is installed
-	    if ( -r "${INTEL_ROOT}/inspector/inspxe-vars.csh" ) then
-		source ${INTEL_ROOT}/inspector/inspxe-vars.csh quiet
-	    endif    		
 	endif
 
 	if ( ${OPENCMISS_SETUP_TOTALVIEW} == true ) then

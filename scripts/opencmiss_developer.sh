@@ -198,55 +198,65 @@ case $sysname in
 	esac
 
 	#Setup intel compilers if defined
-	if [ $OPENCMISS_SETUP_INTEL == true ]; then
+	if [ $OPENCMISS_SETUP_INTEL == true ]; then	    
 	    if [ ! $INTEL_ROOT ]; then
-		export INTEL_ROOT=/opt/intel
+		if [ -d "/opt/intel/oneapi" ]; then
+		    #New oneAPI intel setup
+		    export INTEL_ROOT=/opt/intel/oneapi
+		else    
+		    export INTEL_ROOT=/opt/intel
+		fi
 	    fi
 	    #Add in intel compilers if defined
-	    if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh" ]; then
-		. $INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh $INTELAPI
-		if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh" ]; then
-		    . $INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh $INTELAPI
-		fi
+	    if [ -r "$INTEL_ROOT/setvars.sh" ]; then
+		#New oneAPI intel setup
+		source $INTEL_ROOT/setvars.sh >& intel_setvars.out
 	    else
-		#Add in the newer version of the compilers
-		if [ -x "$INTEL_ROOT/composerxe/bin/compilervars.sh" ]; then
-		    . $INTEL_ROOT/composerxe/bin/compilervars.sh $INTELAPI
-		    if [ -x "$INTEL_ROOT/mkl/bin/mklvars.sh" ]; then
-			. $INTEL_ROOT/mkl/bin/mklvars.sh $INTELAPI
+		if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh" ]; then
+		    . $INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh $INTELAPI
+		    if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh" ]; then
+			. $INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh $INTELAPI
 		    fi
 		else
-		    if [ -x "$INTEL_ROOT/bin/compilervars.sh" ]; then
-			#Newer version of intel compilers
-			. $INTEL_ROOT/bin/compilervars.sh $INTELAPI
+		    #Add in the newer version of the compilers
+		    if [ -x "$INTEL_ROOT/composerxe/bin/compilervars.sh" ]; then
+			. $INTEL_ROOT/composerxe/bin/compilervars.sh $INTELAPI
 			if [ -x "$INTEL_ROOT/mkl/bin/mklvars.sh" ]; then
 			    . $INTEL_ROOT/mkl/bin/mklvars.sh $INTELAPI
 			fi
 		    else
-			#Older version of intel compilers
-			if [ ! $INTEL_COMPILER_VERSION ]; then
-			    export INTEL_COMPILER_VERSION=1.0
-			fi
-			if [ ! $INTEL_COMPILER_BUILD ]; then
-			    export INTEL_COMPILER_BUILD=1.0
-			fi
-			if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh" ]; then
-			    . $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh $INTELAPI
-			fi
-			if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh" ]; then
-			    . $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh $INTELAPI
+			if [ -x "$INTEL_ROOT/bin/compilervars.sh" ]; then
+			    #Newer version of intel compilers
+			    . $INTEL_ROOT/bin/compilervars.sh $INTELAPI
+			    if [ -x "$INTEL_ROOT/mkl/bin/mklvars.sh" ]; then
+				. $INTEL_ROOT/mkl/bin/mklvars.sh $INTELAPI
+			    fi
+			else
+			    #Older version of intel compilers
+			    if [ ! $INTEL_COMPILER_VERSION ]; then
+				export INTEL_COMPILER_VERSION=1.0
+			    fi
+			    if [ ! $INTEL_COMPILER_BUILD ]; then
+				export INTEL_COMPILER_BUILD=1.0
+			    fi
+			    if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh" ]; then
+				. $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh $INTELAPI
+			    fi
+			    if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh" ]; then
+				. $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh $INTELAPI
+			    fi
 			fi
 		    fi
 		fi
+		# Setup Intel advisor if it is installed
+		if [ -x "$INTEL_ROOT/advisor/advixe-vars.csh" ]; then
+		    . $INTEL_ROOT/advisor/advixe-vars.sh quiet
+		fi
+		# Setup Intel inspector if it is installed
+		if [ -x "$INTEL_ROOT/inspector/inspxe-vars.csh" ]; then
+		    . $INTEL_ROOT/inspector/inspxe-vars.sh quiet
+		fi
 	    fi
-	    # Setup Intel advisor if it is installed
-	    if [ -x "$INTEL_ROOT/advisor/advixe-vars.csh" ]; then
-		. $INTEL_ROOT/advisor/advixe-vars.sh quiet
-	    fi
-	    # Setup Intel inspector if it is installed
-	    if [ -x "$INTEL_ROOT/inspector/inspxe-vars.csh" ]; then
-		. $INTEL_ROOT/inspector/inspxe-vars.sh quiet
-	    fi    		
 	fi
 
 	if [ $OPENCMISS_SETUP_TOTALVIEW == true ]; then
