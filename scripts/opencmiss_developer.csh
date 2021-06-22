@@ -200,54 +200,68 @@ switch ( ${sysname} )
 	    
 	#Setup intel compilers if defined
 	if ( ${OPENCMISS_SETUP_INTEL} == true ) then
+	    setenv INTEL_ONEAPI false
 	    if ( ! $?INTEL_ROOT ) then
-		setenv INTEL_ROOT /opt/intel
-	    endif	
-	    if ( -r "${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh" ) then
-		source ${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh ${INTELAPI}
-		if ( -r "${INTEL_ROOT}/compilers_and_libraries/linux/mkl/bin/mklvars.csh" ) then
-		    source ${INTEL_ROOT}/compilers_and_libraries/linux/mkl/bin/mklvars.csh ${INTELAPI}
+		if ( -d "/opt/intel/oneapi" ) then
+		    #New oneAPI intel setup
+		    setenv INTEL_ROOT /opt/intel/oneapi
+		    setenv INTEL_ONEAPI true
+		else
+		    setenv INTEL_ROOT /opt/intel
 		endif
+	    endif	
+	    #Add in intel compilers if defined
+	    if [ -r "$INTEL_ROOT/setvars.sh" ]; then
+		#New oneAPI intel setup
+		echo "OpenCMISS: Cannot set up new Intel oneAPI variabls with csh at the moment."
+		export INTEL_ONEAPI=true
 	    else
-		#Add in the newer version of the compilers
-		if ( -r "${INTEL_ROOT}/composerxe/bin/compilervars.csh" ) then
-		    source ${INTEL_ROOT}/composerxe/bin/compilervars.csh ${INTELAPI}
-		    if ( -r "${INTEL_ROOT}/mkl/bin/mklvars.csh" ) then
-			source ${INTEL_ROOT}/mkl/bin/mklvars.csh ${INTELAPI}
+		if ( -r "${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh" ) then
+		    source ${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh ${INTELAPI}
+		    if ( -r "${INTEL_ROOT}/compilers_and_libraries/linux/mkl/bin/mklvars.csh" ) then
+			source ${INTEL_ROOT}/compilers_and_libraries/linux/mkl/bin/mklvars.csh ${INTELAPI}
 		    endif
 		else
-		    #Add in intel compilers if defined
-		    if ( -r "${INTEL_ROOT}/bin/compilervars.csh" ) then
-			#Newer version of intel compilers
-			source ${INTEL_ROOT}/bin/compilervars.csh ${INTELAPI}
+		    #Add in the newer version of the compilers
+		    if ( -r "${INTEL_ROOT}/composerxe/bin/compilervars.csh" ) then
+			source ${INTEL_ROOT}/composerxe/bin/compilervars.csh ${INTELAPI}
 			if ( -r "${INTEL_ROOT}/mkl/bin/mklvars.csh" ) then
 			    source ${INTEL_ROOT}/mkl/bin/mklvars.csh ${INTELAPI}
 			endif
 		    else
-			#Older version of intel compilers
-			if ( ! $?INTEL_COMPILER_VERSION ) then
-			    setenv INTEL_COMPILER_VERSION 1.0
-			endif	
-			if ( ! $?INTEL_COMPILER_BUILD ) then
-			    setenv INTEL_COMPILER_BUILD 1.0
-			endif	
-			if ( -r "${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh" ) then
-			    source ${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh ${INTELAPI}
-			endif
-			if ( -r "${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/iccvars.csh" ) then
-			    source ${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/iccvars.csh ${INTELAPI}
+			#Add in intel compilers if defined
+			if ( -r "${INTEL_ROOT}/bin/compilervars.csh" ) then
+			    #Newer version of intel compilers
+			    source ${INTEL_ROOT}/bin/compilervars.csh ${INTELAPI}
+			    if ( -r "${INTEL_ROOT}/mkl/bin/mklvars.csh" ) then
+				source ${INTEL_ROOT}/mkl/bin/mklvars.csh ${INTELAPI}
+			    endif
+			else
+			    #Older version of intel compilers
+			    if ( ! $?INTEL_COMPILER_VERSION ) then
+				setenv INTEL_COMPILER_VERSION 1.0
+			    endif	
+			    if ( ! $?INTEL_COMPILER_BUILD ) then
+				setenv INTEL_COMPILER_BUILD 1.0
+			    endif	
+			    if ( -r "${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh" ) then
+				source ${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/ifortvars.csh ${INTELAPI}
+			    endif
+			    if ( -r "${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/iccvars.csh" ) then
+				source ${INTEL_ROOT}/Compiler/${INTEL_COMPILER_VERSION}/${INTEL_COMPILER_BUILD}/bin/iccvars.csh ${INTELAPI}
+			    endif
 			endif
 		    endif
 		endif
+		# Setup Intel advisor if it is installed
+		if ( -r "${INTEL_ROOT}/advisor/advixe-vars.csh" ) then
+		    source ${INTEL_ROOT}/advisor/advixe-vars.csh quiet
+		endif
+		# Setup Intel inspector if it is installed
+		if ( -r "${INTEL_ROOT}/inspector/inspxe-vars.csh" ) then
+		    source ${INTEL_ROOT}/inspector/inspxe-vars.csh quiet
+		endif
 	    endif
-	    # Setup Intel advisor if it is installed
-	    if ( -r "${INTEL_ROOT}/advisor/advixe-vars.csh" ) then
-		source ${INTEL_ROOT}/advisor/advixe-vars.csh quiet
-	    endif
- 	    # Setup Intel inspector if it is installed
-	    if ( -r "${INTEL_ROOT}/inspector/inspxe-vars.csh" ) then
-		source ${INTEL_ROOT}/inspector/inspxe-vars.csh quiet
-	    endif    		
 	endif
 
 	if ( ${OPENCMISS_SETUP_TOTALVIEW} == true ) then
@@ -357,7 +371,11 @@ switch ( ${sysname} )
 		case intel:
 		    which icc >& /dev/null		
 		    if ( $? == 0 ) then
-			setenv INTEL_ICC_MAJOR_VERSION `icc --version | grep ICC | cut -c 11-12`
+			if ( ${INTEL_ONEAPI} == true ) then
+			    setenv INTEL_ICC_MAJOR_VERSION `icc --version | grep ICC | cut -c 11-14`
+			else
+			    setenv INTEL_ICC_MAJOR_VERSION `icc --version | grep ICC | cut -c 11-12`
+			endif
 			setenv INTEL_ICC_MINOR_VERSION `icc --version | grep ICC | cut -c 14`
 			setenv C_COMPILER_STRING intel-C${INTEL_ICC_MAJOR_VERSION}.${INTEL_ICC_MINOR_VERSION}
 			unsetenv INTEL_ICC_MAJOR_VERSION    
@@ -367,7 +385,11 @@ switch ( ${sysname} )
 		    endif
 		    which ifort >& /dev/null		
 		    if ( $? == 0 ) then
-			setenv INTEL_IFORT_MAJOR_VERSION `ifort --version | grep IFORT | cut -c 15-16`
+			if ( ${INTEL_ONEAPI} == true ) then
+			    setenv INTEL_IFORT_MAJOR_VERSION `ifort --version | grep IFORT | cut -c 15-18`
+			else
+			    setenv INTEL_IFORT_MAJOR_VERSION `ifort --version | grep IFORT | cut -c 15-16`
+			endif
 			setenv INTEL_IFORT_MINOR_VERSION `ifort --version | grep IFORT | cut -c 18`
 			setenv FORTRAN_COMPILER_STRING intel-F${INTEL_IFORT_MAJOR_VERSION}.${INTEL_IFORT_MINOR_VERSION}
 			unsetenv INTEL_IFORT_MAJOR_VERSION    
@@ -643,7 +665,7 @@ switch ( ${sysname} )
 		    setenv OPENCMISS_PYTHON_MAJOR_VERSION `python --version | cut -f2 -d' ' | cut -f1 -d.`
 		    setenv OPENCMISS_PYTHON_MINOR_VERSION `python --version | cut -f2 -d' ' | cut -f2 -d.`
 		else
-		    setenv OPENCMISS_PYTHON_MAJOR_VERSION 2
+		    setenv OPENCMISS_PYTHON_MAJOR_VERSION 3
 		    setenv OPENCMISS_PYTHON_MINOR_VERSION 7
 		endif
 		setenv OPENCMISS_PYTHON_VERSION ${OPENCMISS_PYTHON_MAJOR_VERSION}.${OPENCMISS_PYTHON_MINOR_VERSION}

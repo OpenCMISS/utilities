@@ -198,55 +198,68 @@ case $sysname in
 	esac
 
 	#Setup intel compilers if defined
-	if [ $OPENCMISS_SETUP_INTEL == true ]; then
+	if [ $OPENCMISS_SETUP_INTEL == true ]; then	    
+	    export INTEL_ONEAPI=false
 	    if [ ! $INTEL_ROOT ]; then
-		export INTEL_ROOT=/opt/intel
+		if [ -d "/opt/intel/oneapi" ]; then
+		    #New oneAPI intel setup
+		    export INTEL_ROOT=/opt/intel/oneapi
+		    export INTEL_ONEAPI=true
+		else    
+		    export INTEL_ROOT=/opt/intel
+		fi
 	    fi
 	    #Add in intel compilers if defined
-	    if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh" ]; then
-		. $INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh $INTELAPI
-		if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh" ]; then
-		    . $INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh $INTELAPI
-		fi
+	    if [ -r "$INTEL_ROOT/setvars.sh" ]; then
+		#New oneAPI intel setup
+		source $INTEL_ROOT/setvars.sh >& intel_setvars.out
+		export INTEL_ONEAPI=true
 	    else
-		#Add in the newer version of the compilers
-		if [ -x "$INTEL_ROOT/composerxe/bin/compilervars.sh" ]; then
-		    . $INTEL_ROOT/composerxe/bin/compilervars.sh $INTELAPI
-		    if [ -x "$INTEL_ROOT/mkl/bin/mklvars.sh" ]; then
-			. $INTEL_ROOT/mkl/bin/mklvars.sh $INTELAPI
+		if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh" ]; then
+		    . $INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh $INTELAPI
+		    if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh" ]; then
+			. $INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh $INTELAPI
 		    fi
 		else
-		    if [ -x "$INTEL_ROOT/bin/compilervars.sh" ]; then
-			#Newer version of intel compilers
-			. $INTEL_ROOT/bin/compilervars.sh $INTELAPI
+		    #Add in the newer version of the compilers
+		    if [ -x "$INTEL_ROOT/composerxe/bin/compilervars.sh" ]; then
+			. $INTEL_ROOT/composerxe/bin/compilervars.sh $INTELAPI
 			if [ -x "$INTEL_ROOT/mkl/bin/mklvars.sh" ]; then
 			    . $INTEL_ROOT/mkl/bin/mklvars.sh $INTELAPI
 			fi
 		    else
-			#Older version of intel compilers
-			if [ ! $INTEL_COMPILER_VERSION ]; then
-			    export INTEL_COMPILER_VERSION=1.0
-			fi
-			if [ ! $INTEL_COMPILER_BUILD ]; then
-			    export INTEL_COMPILER_BUILD=1.0
-			fi
-			if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh" ]; then
-			    . $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh $INTELAPI
-			fi
-			if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh" ]; then
-			    . $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh $INTELAPI
+			if [ -x "$INTEL_ROOT/bin/compilervars.sh" ]; then
+			    #Newer version of intel compilers
+			    . $INTEL_ROOT/bin/compilervars.sh $INTELAPI
+			    if [ -x "$INTEL_ROOT/mkl/bin/mklvars.sh" ]; then
+				. $INTEL_ROOT/mkl/bin/mklvars.sh $INTELAPI
+			    fi
+			else
+			    #Older version of intel compilers
+			    if [ ! $INTEL_COMPILER_VERSION ]; then
+				export INTEL_COMPILER_VERSION=1.0
+			    fi
+			    if [ ! $INTEL_COMPILER_BUILD ]; then
+				export INTEL_COMPILER_BUILD=1.0
+			    fi
+			    if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh" ]; then
+				. $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh $INTELAPI
+			    fi
+			    if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh" ]; then
+				. $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh $INTELAPI
+			    fi
 			fi
 		    fi
 		fi
+		# Setup Intel advisor if it is installed
+		if [ -x "$INTEL_ROOT/advisor/advixe-vars.csh" ]; then
+		    . $INTEL_ROOT/advisor/advixe-vars.sh quiet
+		fi
+		# Setup Intel inspector if it is installed
+		if [ -x "$INTEL_ROOT/inspector/inspxe-vars.csh" ]; then
+		    . $INTEL_ROOT/inspector/inspxe-vars.sh quiet
+		fi
 	    fi
-	    # Setup Intel advisor if it is installed
-	    if [ -x "$INTEL_ROOT/advisor/advixe-vars.csh" ]; then
-		. $INTEL_ROOT/advisor/advixe-vars.sh quiet
-	    fi
-	    # Setup Intel inspector if it is installed
-	    if [ -x "$INTEL_ROOT/inspector/inspxe-vars.csh" ]; then
-		. $INTEL_ROOT/inspector/inspxe-vars.sh quiet
-	    fi    		
 	fi
 
 	if [ $OPENCMISS_SETUP_TOTALVIEW == true ]; then
@@ -356,8 +369,12 @@ case $sysname in
 	      'intel')
 		which icc >& /dev/null		
 		if [ $? == 0 ]; then
-		    export INTEL_ICC_MAJOR_VERSION=`icc --version | grep ICC | cut -c 11-12`
-		    export INTEL_ICC_MINOR_VERSION=`icc --version | grep ICC | cut -c 14`
+		    if [ $INTEL_ONEAPI == true ]; then
+			export INTEL_ICC_MAJOR_VERSION=`icc --version | grep ICC | cut -f1 -d. | cut -c 11-14`
+		    else
+			export INTEL_ICC_MAJOR_VERSION=`icc --version | grep ICC | cut -f1 -d. | cut -c 11-12`
+		    fi
+		    export INTEL_ICC_MINOR_VERSION=`icc --version | grep ICC | cut -f2 -d.`
 		    export C_COMPILER_STRING=intel-C$INTEL_ICC_MAJOR_VERSION.$INTEL_ICC_MINOR_VERSION
 		    unset INTEL_ICC_MAJOR_VERSION    
 		    unset INTEL_ICC_MINOR_VERSION    
@@ -366,8 +383,12 @@ case $sysname in
 		fi
 		which ifort >& /dev/null		
 		if [ $? == 0 ]; then
-		    export INTEL_IFORT_MAJOR_VERSION=`ifort --version | grep IFORT | cut -c 15-16`
-		    export INTEL_IFORT_MINOR_VERSION=`ifort --version | grep IFORT | cut -c 18`
+		    if [ $INTEL_ONEAPI == true ]; then
+			export INTEL_IFORT_MAJOR_VERSION=`ifort --version | grep IFORT | cut -f1 -d. | cut -c 15-18`
+		    else
+			export INTEL_IFORT_MAJOR_VERSION=`ifort --version | grep IFORT | cut -f1 -d. | cut -c 15-16`
+		    fi
+		    export INTEL_IFORT_MINOR_VERSION=`ifort --version | grep IFORT | cut -f2 -d.`
 		    export FORTRAN_COMPILER_STRING=intel-F$INTEL_IFORT_MAJOR_VERSION.$INTEL_IFORT_MINOR_VERSION
 		    unset INTEL_IFORT_MAJOR_VERSION    
 		    unset INTEL_IFORT_MINOR_VERSION    
@@ -642,7 +663,7 @@ case $sysname in
 		    export OPENCMISS_PYTHON_MAJOR_VERSION=`python --version | cut -f2 -d' ' | cut -f1 -d.`
 		    export OPENCMISS_PYTHON_MINOR_VERSION=`python --version | cut -f2 -d' ' | cut -f2 -d.`
 		else
-		    export OPENCMISS_PYTHON_MAJOR_VERSION=2
+		    export OPENCMISS_PYTHON_MAJOR_VERSION=3
 		    export OPENCMISS_PYTHON_MINOR_VERSION=7
 		fi
 		export OPENCMISS_PYTHON_VERSION=$OPENCMISS_PYTHON_MAJOR_VERSION.$OPENCMISS_PYTHON_MINOR_VERSION
