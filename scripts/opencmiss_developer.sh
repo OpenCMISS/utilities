@@ -34,6 +34,9 @@ fi
 if [ ! $OPENCMISS_SETUP_TOTALVIEW ]; then
     export OPENCMISS_SETUP_TOTALVIEW=true
 fi
+if [ ! $OPENCMISS_SETUP_CUDA ]; then
+    export OPENCMISS_SETUP_CUDA=true
+fi
 if [ ! $OPENCMISS_SETUP_LATEX ]; then
     export OPENCMISS_SETUP_LATEX=true
 fi
@@ -145,7 +148,6 @@ case $sysname in
 	    case $OPENCMISS_ARCHNAME in
 	      'i686-linux')
 	        export LIBAPI=lib
-
 	        export SYSLIBAPI=lib
                 export BINAPI=bin
 		export INTELAPI=ia32
@@ -262,6 +264,7 @@ case $sysname in
 	    fi
 	fi
 
+	#Setup totalview if defined
 	if [ $OPENCMISS_SETUP_TOTALVIEW == true ]; then
 	    which totalview >& /dev/null
 	    if [ $? == 0 ]; then
@@ -332,6 +335,59 @@ case $sysname in
 	    fi
 	fi
 
+	#Setup cuda if defined
+	if [ $OPENCMISS_SETUP_CUDA == true ]; then
+	    which nvcc >& /dev/null		
+	    if [ $? == 0 ]; then
+		export CUDA_NVCC_PATH=`which nvcc`		
+		export CUDA_BIN_PATH=`dirname $CUDA_NVCC_PATH`
+		export CUDA_PATH=`dirname $CUDA_BIN_PATH`
+		export CUDA_NVCC_MAJOR_VERSION=`nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f1 -d.`
+		export CUDA_NVCC_MINOR_VERSION=`nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f2 -d.`
+		export CUDA_NVCC_VERSION=$CUDA_NVCC_MAJOR_VERSION.$CUDA_NVCC_MINOR_VERSION
+		unset CUDA_NVCC_MAJOR_VERSION
+		unset CUDA_NVCC_MINOR_VERSION
+		unset CUDA_BIN_PATH
+	    else
+		if [ ! $CUDA_PATH ]; then
+		    export CUDA_PATH=/usr/local/cuda
+		fi
+		export CUDA_BIN_PATH=$CUDA_PATH/bin
+		if [ -d $CUDA_PATH ]; then
+		    if [ -x $CUDA_BIN_PATH/nvcc ]; then
+			export CUDA_NVCC_MAJOR_VERSION=`$CUDA_BIN_PATH/nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f1 -d.`
+			export CUDA_NVCC_MINOR_VERSION=`$CUDA_BIN_PATH/nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f2 -d.`
+		    fi
+		    export CUDA_NVCC_VERSION=$CUDA_NVCC_MAJOR_VERSION.$CUDA_NVCC_MINOR_VERSION
+		    unset CUDA_NVCC_MAJOR_VERSION
+		    unset CUDA_NVCC_MINOR_VERSION
+		else
+		    export CUDA_NVCC_VERSION=unknown
+		fi
+		unset CUDA_BIN_PATH
+	    fi
+	    if [ -d $CUDA_PATH ]; then
+		export CUDA_PARENT_PATH=`dirname $CUDA_PATH`
+		export CUDA_VERSION_BIN_PATH=$CUDA_PARENT_PATH/cuda-$CUDA_NVCC_VERSION/bin
+		export CUDA_VERSION_LIB_PATH=$CUDA_PARENT_PATH/cuda-$CUDA_NVCC_VERSION/$LIBAPI
+		if [ -d $CUDA_VERSION_BIN_PATH ]; then
+		    if [ -z "$PATH" ]; then
+			export PATH=$CUDA_VERSION_BIN_PATH
+		    else
+			export PATH=$CUDA_VERSION_BIN_PATH:$PATH
+		    fi
+		fi
+		if [ -d $CUDA_VERSION_LIB_PATH ]; then
+		    if [ -z "$LD_LIBRARY_PATH" ]; then
+			export LD_LIBRARY_PATH=$CUDA_VERSION_LIB_PATH
+		    else
+			export LD_LIBRARY_PATH=$CUDA_VERSION_LIB_PATH:$LD_LIBRARY_PATH
+		    fi
+		fi
+	    fi
+	fi
+	
+	#Setup toolchain if defined
 	if [ $OPENCMISS_TOOLCHAIN ]; then
 	    case $OPENCMISS_TOOLCHAIN in
 	      'gnu')
