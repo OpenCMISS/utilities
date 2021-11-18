@@ -35,6 +35,9 @@ endif
 if ( ! $?OPENCMISS_SETUP_TOTALVIEW ) then
     setenv OPENCMISS_SETUP_TOTALVIEW true
 endif
+if ( ! $?OPENCMISS_SETUP_CUDA ) then
+    setenv OPENCMISS_SETUP_CUDA true
+endif
 if ( ! $?OPENCMISS_SETUP_LATEX ) then
     setenv OPENCMISS_SETUP_LATEX true
 endif
@@ -50,7 +53,7 @@ endif
 if ( ! $?OPENCMISS_BUILD_TYPE ) then
     setenv OPENCMISS_BUILD_TYPE release
 endif
-    
+
 switch ( ${sysname} )
     case AIX:
 
@@ -211,10 +214,10 @@ switch ( ${sysname} )
 		endif
 	    endif	
 	    #Add in intel compilers if defined
-	    if [ -r "$INTEL_ROOT/setvars.sh" ]; then
+	    if ( -r "$INTEL_ROOT/setvars.sh" ) then
 		#New oneAPI intel setup
 		echo "OpenCMISS: Cannot set up new Intel oneAPI variabls with csh at the moment."
-		export INTEL_ONEAPI=true
+		setenv INTEL_ONEAPI true
 	    else
 		if ( -r "${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh" ) then
 		    source ${INTEL_ROOT}/compilers_and_libraries/linux/bin/compilervars.csh ${INTELAPI}
@@ -264,6 +267,7 @@ switch ( ${sysname} )
 	    endif
 	endif
 
+	#Setup totalview if defined
 	if ( ${OPENCMISS_SETUP_TOTALVIEW} == true ) then
 	    which totalview >& /dev/null
 	    if ( $? == 0 ) then
@@ -334,6 +338,59 @@ switch ( ${sysname} )
 	    endif
 	endif	
 
+	#Setup cuda if defined
+	if ( $?OPENCMISS_SETUP_CUDA ) then
+	    which nvcc >& /dev/null		
+	    if ( $? == 0 ) then
+		setenv CUDA_NVCC_PATH `which nvcc`
+		setenv CUDA_BIN_PATH `dirname ${CUDA_NVCC_PATH}`
+		setenv CUDA_PATH `dirname ${CUDA_BIN_PATH}`
+		setenv CUDA_NVCC_MAJOR_VERSION `nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f1 -d.`
+		setenv CUDA_NVCC_MINOR_VERSION `nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f2 -d.`
+		setenv CUDA_NVCC_VERSION ${CUDA_NVCC_MAJOR_VERSION}.${CUDA_NVCC_MINOR_VERSION}
+		unsetenv CUDA_NVCC_MAJOR_VERSION
+		unsetenv CUDA_NVCC_MINOR_VERSION
+		unsetenv CUDA_BIN_PATH
+	    else
+		if ( $?CUDA_PATH ) then
+		    setenv CUDA_PATH /usr/local/cuda
+		endif
+		setenv CUDA_BIN_PATH ${CUDA_PATH}/bin
+		if ( -d ${CUDA_PATH} ) then
+		    if ( -x ${CUDA_BIN_PATH}/nvcc ) then
+			setenv CUDA_NVCC_MAJOR_VERSION `${CUDA_BIN_PATH}/nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f1 -d.`
+			setenv CUDA_NVCC_MINOR_VERSION `${CUDA_BIN_PATH}/nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f2 -d.`
+		    endif
+		    setenv CUDA_NVCC_VERSION ${CUDA_NVCC_MAJOR_VERSION}.${CUDA_NVCC_MINOR_VERSION}
+		    unsetenv CUDA_NVCC_MAJOR_VERSION
+		    unsetenv CUDA_NVCC_MINOR_VERSION
+		else
+		    setenv CUDA_NVCC_VERSION unknown
+		endif
+		unsetenv CUDA_BIN_PATH
+	    endif
+	    if ( -d ${CUDA_PATH} ) then
+		setenv CUDA_PARENT_PATH `dirname ${CUDA_PATH}`
+		setenv CUDA_VERSION_BIN_PATH ${CUDA_PARENT_PATH}/cuda-${CUDA_NVCC_VERSION}/bin
+		setenv CUDA_VERSION_LIB_PATH ${CUDA_PARENT_PATH}/cuda-${CUDA_NVCC_VERSION}/${LIBAPI}
+		if ( -d ${CUDA_VERSION_BIN_PATH} ) then
+		    if ( ! $?PATH ) then
+			setenv PATH ${CUDA_VERSION_BIN_PATH}
+		    else
+			setenv PATH ${CUDA_VERSION_BIN_PATH}:${PATH}
+		    endif
+		endif
+		if ( -d ${CUDA_VERSION_LIB_PATH} ) then
+		    if ( ! $?LD_LIBRARY_PATH ) then
+			setenv LD_LIBRARY_PATH ${CUDA_VERSION_LIB_PATH}
+		    else
+			setenv LD_LIBRARY_PATH ${CUDA_VERSION_LIB_PATH}:${LD_LIBRARY_PATH}
+		    endif
+		endif
+	    endif
+	endif
+		
+	#Setup toolchain if defined
 	if ( $?OPENCMISS_TOOLCHAIN ) then
 	    switch ( ${OPENCMISS_TOOLCHAIN} )
 		case gnu:
