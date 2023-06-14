@@ -80,63 +80,63 @@ case $sysname in
 	export OPENCMISS_ARCHNAME=$machine-linux
 
 	#Try and work out what linux distribution we are on
-	if [ -r "/etc/SuSE-release" ]; then
+	if [ \( -r "/etc/SuSE-release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=suse
 	    export OPENCMISS_SUSE_RELEASE="`grep "VERSION" /etc/SuSE-release | cut -f2 -d"=" | tr -d " "`"."`grep "PATCHLEVEL" /etc/SuSE-release | cut -f2 -d"=" | tr -d " "`"
-	elif [ -r "/etc/redhat-release" ]; then
+	elif [ \( -r "/etc/redhat-release" \) ]; then
 	    #Work out if it is Red Hat, Fedora or Scientific Linux
-            if [ -n "`grep "Red Hat Enterprise" /etc/redhat-release`" ] ; then
+            if [ \( -n "`grep "Red Hat Enterprise" /etc/redhat-release`" \) ] ; then
 		export OPENCMISS_LINUX_DISTRIBUTION=redhat
 	        export OPENCMISS_REDHAT_RELEASE=`cat /etc/redhat-release | cut -f7 -d" "`
-            elif [ -n "`grep "Fedora" /etc/redhat-release`" ] ; then
+            elif [ \( -n "`grep "Fedora" /etc/redhat-release`" \) ] ; then
 		export OPENCMISS_LINUX_DISTRIBUTION=fedora
 	        export OPENCMISS_FEDORA_RELEASE=`cat /etc/redhat-release | cut -f3 -d" "`
-            elif [ -n "`grep "Scientific Linux" /etc/redhat-release`" ] ; then
+            elif [ \( -n "`grep "Scientific Linux" /etc/redhat-release`" \) ] ; then
 		export OPENCMISS_LINUX_DISTRIBUTION=scientificlinux
 	        export OPENCMISS_SCILINUX_RELEASE=`cat /etc/redhat-release | cut -f4 -d" " | cut -f1 -d"."`
-            elif [ -n "`grep "CentOS" /etc/redhat-release`" ] ; then
+            elif [ \( -n "`grep "CentOS" /etc/redhat-release`" \) ] ; then
 		export OPENCMISS_LINUX_DISTRIBUTION=centos
 	        export OPENCMISS_CENTOS_RELEASE=`cat /etc/redhat-release | cut -f4 -d" " | cut -f1 -d"."`
             else 
 		echo "OpenCMISS: Can not determine Linux distribution from /etc/redhat-release."
 		export OPENCMISS_LINUX_DISTRIBUTION=unknown
 	    fi
-	elif [ -r "/etc/redhat_version" ]; then
+	elif [ \( -r "/etc/redhat_version" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=redhat
-	elif [ -r "/etc/fedora-release" ]; then
+	elif [ \( -r "/etc/fedora-release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=fedora
 	    export OPENCMISS_FEDORA_RELEASE=`cat /etc/fedora-release | cut -f3 -d" "`
-	elif [ -r "/etc/slackware-release" ]; then
+	elif [ \( -r "/etc/slackware-release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=slackware
-	elif [ -r "/etc/slackware-version" ]; then
+	elif [ \( -r "/etc/slackware-version" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=slackware
-	elif [ -r "/etc/lsb-release" ]; then
+	elif [ \( -r "/etc/lsb-release" \) ]; then
 	    #Work out if it is Ubuntu or Mint
-            if [ -n "`grep "DISTRIB_ID=Ubuntu" /etc/lsb-release`" ] ; then
+            if [ \( -n "`grep "DISTRIB_ID=Ubuntu" /etc/lsb-release`" \) ] ; then
 		export OPENCMISS_LINUX_DISTRIBUTION=ubuntu
 		export OPENCMISS_UBUNTU_RELEASE=`grep "DISTRIB_RELEASE" /etc/lsb-release | cut -f2 -d"="`
-            elif [ -n "`grep "DISTRIB_ID=LinuxMint" /etc/lsb-release`" ] ; then
+            elif [ \( -n "`grep "DISTRIB_ID=LinuxMint" /etc/lsb-release`" \) ] ; then
 		export OPENCMISS_LINUX_DISTRIBUTION=mint
 		export OPENCMISS_MINT_RELEASE=`grep "DISTRIB_RELEASE" /etc/lsb-release | cut -f2 -d"="`
             else 
 		echo "OpenCMISS: Can not determine Linux distribution from /etc/lsb-release."
 		export OPENCMISS_LINUX_DISTRIBUTION=unknown
 	    fi
-	elif [ -r "/etc/debian_release" ]; then
+	elif [ \( -r "/etc/debian_release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=debian
-	elif [ -r "/etc/debian_version" ]; then
+	elif [ \( -r "/etc/debian_version" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=debian
-	elif [ -r "/etc/mandrake-release" ]; then
+	elif [ \( -r "/etc/mandrake-release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=mandrake
-	elif [ -r "/etc/yellowdog-release" ]; then
+	elif [ \( -r "/etc/yellowdog-release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=yellowdog
-	elif [ -r "/etc/sun-release" ]; then
+	elif [ \( -r "/etc/sun-release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=sun
-	elif [ -r "/etc/release" ]; then
+	elif [ \( -r "/etc/release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=solaris
-	elif [ -r "/etc/gentoo-release" ]; then
+	elif [ \( -r "/etc/gentoo-release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=gentoo
-	elif [ -r "/etc/UnitedLinux-release" ]; then
+	elif [ \( -r "/etc/UnitedLinux-release" \) ]; then
 	    export OPENCMISS_LINUX_DISTRIBUTION=unitedlinux
         else
 	    echo "OpenCMISS: Can not read /etc/issue. Linux distribution is unknown."
@@ -203,7 +203,7 @@ case $sysname in
 	if [ $OPENCMISS_SETUP_INTEL == true ]; then	    
 	    export INTEL_ONEAPI=false
 	    if [ ! $INTEL_ROOT ]; then
-		if [ -d "/opt/intel/oneapi" ]; then
+		if [ \( -d "/opt/intel/oneapi" \) ]; then
 		    #New oneAPI intel setup
 		    export INTEL_ROOT=/opt/intel/oneapi
 		    export INTEL_ONEAPI=true
@@ -212,28 +212,28 @@ case $sysname in
 		fi
 	    fi
 	    #Add in intel compilers if defined
-	    if [ -r "$INTEL_ROOT/setvars.sh" ]; then
+	    if [ \( -r "$INTEL_ROOT/setvars.sh" \) ]; then
 		#New oneAPI intel setup
 		source $INTEL_ROOT/setvars.sh >& intel_setvars.out
 		export INTEL_ONEAPI=true
 	    else
-		if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh" ]; then
+		if [ \( -x "$INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh" \) ]; then
 		    . $INTEL_ROOT/compilers_and_libraries/linux/bin/compilervars.sh $INTELAPI
-		    if [ -x "$INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh" ]; then
+		    if [ \( -x "$INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh" \) ]; then
 			. $INTEL_ROOT/compilers_and_libraries/linux/mkl/bin/mklvars.sh $INTELAPI
 		    fi
 		else
 		    #Add in the newer version of the compilers
-		    if [ -x "$INTEL_ROOT/composerxe/bin/compilervars.sh" ]; then
+		    if [ \( -x "$INTEL_ROOT/composerxe/bin/compilervars.sh" \) ]; then
 			. $INTEL_ROOT/composerxe/bin/compilervars.sh $INTELAPI
-			if [ -x "$INTEL_ROOT/mkl/bin/mklvars.sh" ]; then
+			if [ \( -x "$INTEL_ROOT/mkl/bin/mklvars.sh" \) ]; then
 			    . $INTEL_ROOT/mkl/bin/mklvars.sh $INTELAPI
 			fi
 		    else
-			if [ -x "$INTEL_ROOT/bin/compilervars.sh" ]; then
+			if [ \( -x "$INTEL_ROOT/bin/compilervars.sh" \) ]; then
 			    #Newer version of intel compilers
 			    . $INTEL_ROOT/bin/compilervars.sh $INTELAPI
-			    if [ -x "$INTEL_ROOT/mkl/bin/mklvars.sh" ]; then
+			    if [ \( -x "$INTEL_ROOT/mkl/bin/mklvars.sh" \) ]; then
 				. $INTEL_ROOT/mkl/bin/mklvars.sh $INTELAPI
 			    fi
 			else
@@ -244,21 +244,21 @@ case $sysname in
 			    if [ ! $INTEL_COMPILER_BUILD ]; then
 				export INTEL_COMPILER_BUILD=1.0
 			    fi
-			    if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh" ]; then
+			    if [ \( -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh" \) ]; then
 				. $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/ifortvars.sh $INTELAPI
 			    fi
-			    if [ -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh" ]; then
+			    if [ \( -x "$INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh" \) ]; then
 				. $INTEL_ROOT/Compiler/$INTEL_COMPILER_VERSION/$INTEL_COMPILER_BUILD/bin/iccvars.sh $INTELAPI
 			    fi
 			fi
 		    fi
 		fi
 		# Setup Intel advisor if it is installed
-		if [ -x "$INTEL_ROOT/advisor/advixe-vars.csh" ]; then
+		if [ \( -x "$INTEL_ROOT/advisor/advixe-vars.csh" \) ]; then
 		    . $INTEL_ROOT/advisor/advixe-vars.sh quiet
 		fi
 		# Setup Intel inspector if it is installed
-		if [ -x "$INTEL_ROOT/inspector/inspxe-vars.csh" ]; then
+		if [ \( -x "$INTEL_ROOT/inspector/inspxe-vars.csh" \) ]; then
 		    . $INTEL_ROOT/inspector/inspxe-vars.sh quiet
 		fi
 	    fi
@@ -282,14 +282,14 @@ case $sysname in
 		if [ ! $TOTALVIEW_PATH ]; then
 		    export TOTALVIEW_PATH=/opt/toolworks
 		fi
-		if [ -d $TOTALVIEW_PATH ]; then
+		if [ \( -d $TOTALVIEW_PATH \) ]; then
 		    if [ ! $TOTALVIEW_VERSION ]; then
 			export TOTALVIEW_VERSION1=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f2 -d.`
-			if [ -n $TOTALVIEW_VERSION1 ]; then
+			if [ \( -n $TOTALVIEW_VERSION1 \) ]; then
 			    export TOTALVIEW_VERSION2=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f3 -d.`
-			    if [ -n $TOTALVIEW_VERSION2 ]; then
+			    if [ \( -n $TOTALVIEW_VERSION2 \) ]; then
 				export TOTALVIEW_VERSION3=`ls $TOTALVIEW_PATH | grep -i totalview | tail -1 | cut -f4 -d.`
-				if [ -n $TOTALVIEW_VERSION3 ]; then
+				if [ \( -n $TOTALVIEW_VERSION3 \) ]; then
 				    export TOTALVIEW_VERSION=$TOTALVIEW_VERSION1.$TOTALVIEW_VERSION2.$TOTALVIEW_VERSION3
 				fi
 				unset TOTALVIEW_VERSION3
@@ -300,12 +300,12 @@ case $sysname in
 		    fi
 		fi
 	    fi
-	    if [ -d $TOTALVIEW_PATH ]; then
+	    if [ \( -d $TOTALVIEW_PATH \) ]; then
 		if [ ! $FLEXLM_VERSION ]; then
 		    export FLEXLM_VERSION1=`ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f2 -d'-'`
-		    if [ -n $FLEXLM_VERSION1 ]; then
+		    if [ \( -n $FLEXLM_VERSION1 \) ]; then
 			export FLEXLM_VERSION2=`ls $TOTALVIEW_PATH | grep -i flexlm | tail -1 | cut -f3 -d'-'`
-			if [ -n $FLEXLM_VERSION2 ]; then
+			if [ \( -n $FLEXLM_VERSION2 \) ]; then
 			    export FLEXLM_VERSION=$FLEXLM_VERSION1-$FLEXLM_VERSION2
 			fi
 			unset FLEXLM_VERSION2
@@ -314,8 +314,8 @@ case $sysname in
 		fi
 		#Add in totalview path
 		if [ $TOTALVIEW_VERSION ]; then
-		    if [ -d "$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin" ]; then
-			if [ -z "$PATH" ]; then
+		    if [ \( -d "$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin" \) ]; then
+			if [ \( -z "$PATH" \) ]; then
 			    export PATH=$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin
 			else
 			    export PATH=$TOTALVIEW_PATH/totalview.$TOTALVIEW_VERSION/bin:$PATH
@@ -324,8 +324,8 @@ case $sysname in
 		fi
 		#Add in FlexLM path
 		if [ $FLEXLM_VERSION ]; then
-		    if [ -d "$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION" ]; then
-			if [ -z "$LM_LICENSE_FILES" ]; then
+		    if [ \( -d "$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION" \) ]; then
+			if [ \( -z "$LM_LICENSE_FILES" \) ]; then
 			    export LM_LICENSE_FILESPATH=$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION
 			else
 			    export LM_LICENSE_FILESPATH=$TOTALVIEW_PATH/flexlm-$FLEXLM_VERSION:$LM_LICENSE_FILES
@@ -353,8 +353,8 @@ case $sysname in
 		    export CUDA_PATH=/usr/local/cuda
 		fi
 		export CUDA_BIN_PATH=$CUDA_PATH/bin
-		if [ -d $CUDA_PATH ]; then
-		    if [ -x $CUDA_BIN_PATH/nvcc ]; then
+		if [ \( -d $CUDA_PATH \) ]; then
+		    if [ \( -x $CUDA_BIN_PATH/nvcc \) ]; then
 			export CUDA_NVCC_MAJOR_VERSION=`$CUDA_BIN_PATH/nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f1 -d.`
 			export CUDA_NVCC_MINOR_VERSION=`$CUDA_BIN_PATH/nvcc --version | grep -i "compilation tools" | cut -f2 -d, | cut -f3 -d' ' | cut -f2 -d.`
 		    fi
@@ -366,19 +366,19 @@ case $sysname in
 		fi
 		unset CUDA_BIN_PATH
 	    fi
-	    if [ -d $CUDA_PATH ]; then
+	    if [ \( -d $CUDA_PATH \) ]; then
 		export CUDA_PARENT_PATH=`dirname $CUDA_PATH`
 		export CUDA_VERSION_BIN_PATH=$CUDA_PARENT_PATH/cuda-$CUDA_NVCC_VERSION/bin
 		export CUDA_VERSION_LIB_PATH=$CUDA_PARENT_PATH/cuda-$CUDA_NVCC_VERSION/$LIBAPI
-		if [ -d $CUDA_VERSION_BIN_PATH ]; then
-		    if [ -z "$PATH" ]; then
+		if [ \( -d $CUDA_VERSION_BIN_PATH \) ]; then
+		    if [ \( -z "$PATH" \) ]; then
 			export PATH=$CUDA_VERSION_BIN_PATH
 		    else
 			export PATH=$CUDA_VERSION_BIN_PATH:$PATH
 		    fi
 		fi
-		if [ -d $CUDA_VERSION_LIB_PATH ]; then
-		    if [ -z "$LD_LIBRARY_PATH" ]; then
+		if [ \( -d $CUDA_VERSION_LIB_PATH \) ]; then
+		    if [ \( -z "$LD_LIBRARY_PATH" \) ]; then
 			export LD_LIBRARY_PATH=$CUDA_VERSION_LIB_PATH
 		    else
 			export LD_LIBRARY_PATH=$CUDA_VERSION_LIB_PATH:$LD_LIBRARY_PATH
@@ -426,11 +426,11 @@ case $sysname in
 		which icc >& /dev/null		
 		if [ $? == 0 ]; then
 		    if [ $INTEL_ONEAPI == true ]; then
-			export INTEL_ICC_MAJOR_VERSION=`icc --version | grep ICC | cut -f1 -d. | cut -c 11-14`
+			export INTEL_ICC_MAJOR_VERSION=`icc -diag-disable=10441 --version | grep ICC | cut -f1 -d. | cut -c 11-14`
 		    else
-			export INTEL_ICC_MAJOR_VERSION=`icc --version | grep ICC | cut -f1 -d. | cut -c 11-12`
+			export INTEL_ICC_MAJOR_VERSION=`icc -diag-disable=10441 --version | grep ICC | cut -f1 -d. | cut -c 11-12`
 		    fi
-		    export INTEL_ICC_MINOR_VERSION=`icc --version | grep ICC | cut -f2 -d.`
+		    export INTEL_ICC_MINOR_VERSION=`icc -diag-disable=10441 --version | grep ICC | cut -f2 -d.`
 		    export C_COMPILER_STRING=intel-C$INTEL_ICC_MAJOR_VERSION.$INTEL_ICC_MINOR_VERSION
 		    unset INTEL_ICC_MAJOR_VERSION    
 		    unset INTEL_ICC_MINOR_VERSION    
@@ -522,12 +522,12 @@ case $sysname in
 		case $OPENCMISS_LINUX_DISTRIBUTION in
 		  'fedora')
 		    #Fedora doesn't include mpich in the path by default
-		    if [ -z "$PATH" ]; then
+		    if [ \( -z "$PATH" \) ]; then
 			export PATH=/usr/$LIBAPI/mpich/bin
 		    else
 			export PATH=/usr/$LIBAPI/mpich/bin:$PATH
 		    fi
-		    if [ -z "$LD_LIBRARY_PATH" ]; then
+		    if [ \( -z "$LD_LIBRARY_PATH" \) ]; then
 			export LD_LIBRARY_PATH=/usr/$LIBAPI/mpich/lib
 		    else
 			export LD_LIBRARY_PATH=/usr/$LIBAPI/mpich/lib:$LD_LIBRARY_PATH
@@ -543,12 +543,12 @@ case $sysname in
 		case $OPENCMISS_LINUX_DISTRIBUTION in
 		  'fedora')
 		    #Fedora doesn't include openmpi in the path by default
-		    if [ -z "$PATH" ]; then
+		    if [ \( -z "$PATH" \) ]; then
 			export PATH=/usr/$LIBAPI/openmpi/bin
 		    else
 			export PATH=/usr/$LIBAPI/openmpi/bin:$PATH
 		    fi
-		    if [ -z "$LD_LIBRARY_PATH" ]; then
+		    if [ \( -z "$LD_LIBRARY_PATH" \) ]; then
 			export LD_LIBRARY_PATH=/usr/$LIBAPI/openmpi/lib
 		    else
 			export LD_LIBRARY_PATH=/usr/$LIBAPI/openmpi/lib:$LD_LIBRARY_PATH
@@ -565,9 +565,9 @@ case $sysname in
 	      'intel')
 		export MPI_STRING=intel
 		#Newer Intel directory structure
-		if [ -d "$INTEL_ROOT/itac_latest" ]; then
+		if [ \( -d "$INTEL_ROOT/itac_latest" \) ]; then
 		    #New Itac directory structure
-		    if [ -r "$INTEL_ROOT/itac_latest/bin/itacvars.sh" ]; then
+		    if [ \( -r "$INTEL_ROOT/itac_latest/bin/itacvars.sh" \) ]; then
 			. $INTEL_ROOT/itac_latest/bin/itacvars.sh
 		    fi
 		else
@@ -575,23 +575,23 @@ case $sysname in
 			export INTEL_TRACE_COLLECTOR_VERSION=1.2.3
 		    fi
 		    #Old Itac directory structure
-		    if [ -r "$INTEL_ROOT/itac/$INTEL_TRACE_COLLECTOR_VERSION/bin/itacvars.sh" ]; then
+		    if [ \( -r "$INTEL_ROOT/itac/$INTEL_TRACE_COLLECTOR_VERSION/bin/itacvars.sh" \) ]; then
 			. $INTEL_ROOT/itac/$INTEL_TRACE_COLLECTOR_VERSION/bin/itacvars.sh impi4
 		    fi
 		fi
 		#Newer Intel MPI directory structure
-		if [ -r "$INTEL_ROOT/compilers_and_libraries/linux/mpi/$BINAPI/mpivars.sh" ]; then
+		if [ \( -r "$INTEL_ROOT/compilers_and_libraries/linux/mpi/$BINAPI/mpivars.sh" \) ]; then
 		    . $INTEL_ROOT/compilers_and_libraries/linux/mpi/$BINAPI/mpivars.sh
 		else
-		    if [ -d "$INTEL_ROOT/impi/latest" ]; then
+		    if [ \( -d "$INTEL_ROOT/impi/latest" \) ]; then
 			#New Intel MPI directory structure. Use latest directory
-			if [ -r "$INTEL_ROOT/impi/latest/$BINAPI/mpivars.sh" ]; then
+			if [ \( -r "$INTEL_ROOT/impi/latest/$BINAPI/mpivars.sh" \) ]; then
 			    . $INTEL_ROOT/impi/latest/$BINAPI/mpivars.csh
 			fi
 		    else			    
-			if [ -d "$INTEL_ROOT/impi_latest" ]; then
+			if [ \( -d "$INTEL_ROOT/impi_latest" \) ]; then
 			    #New Intel MPI directory structure. Use latest directory
-			    if [ -r "$INTEL_ROOT/impi_latest/$BINAPI/mpivars.sh" ]; then
+			    if [ \( -r "$INTEL_ROOT/impi_latest/$BINAPI/mpivars.sh" \) ]; then
 				    . $INTEL_ROOT/impi_latest/$BINAPI/mpivars.sh
 			    fi
 			else
@@ -599,7 +599,7 @@ case $sysname in
 				export INTEL_MPI_VERSION=1.2.3
 			    fi
 			    #Old Intel MPI directory strucutre. Use specific version
-			    if [ -r "$INTEL_ROOT/impi/$INTEL_MPI_VERSION/$BINAPI/mpivars.sh" ]; then
+			    if [ \( -r "$INTEL_ROOT/impi/$INTEL_MPI_VERSION/$BINAPI/mpivars.sh" \) ]; then
 				. $INTEL_ROOT/impi/$INTEL_MPI_VERSION/$BINAPI/mpivars.sh
 			    fi
 			fi
@@ -627,11 +627,26 @@ case $sysname in
 	      'debug')
 		export MPI_BUILD_TYPE_STRING=_debug
 		;;
+	      'Debug')
+		export MPI_BUILD_TYPE_STRING=_Debug
+		;;
 	      'release')
 		export MPI_BUILD_TYPE_STRING=_release
 		;;
+	      'Release')
+		export MPI_BUILD_TYPE_STRING=_Release
+		;;
 	      'relwithdebinfo')
 		export MPI_BUILD_TYPE_STRING=_relwithdebinfo
+		;;
+	      'RelWithDebInfo')
+		export MPI_BUILD_TYPE_STRING=_RelWithDebInfo
+		;;
+	      'minsizerel')
+		export MPI_BUILD_TYPE_STRING=_minsizerel
+		;;
+	      'MinSizeRel')
+		export MPI_BUILD_TYPE_STRING=_MinSizeRel
 		;;
 	      'system')
 		export MPI_BUILD_TYPE_STRING=_system
@@ -663,8 +678,8 @@ case $sysname in
 	      'relwithdebinfo')
 		export BUILD_TYPE_STRING=relwithdebinfo
 		;;
-	      'RelwithDebInfo')
-		export BUILD_TYPE_STRING=RelwithDebInfo
+	      'RelWithDebInfo')
+		export BUILD_TYPE_STRING=RelWithDebInfo
 		;;
 	      'minsizerel')
 		export BUILD_TYPE_STRING=minsizerel
@@ -696,14 +711,14 @@ case $sysname in
 	export OPENCMISS_ARCHPATH_NOMPI=$OPENCMISS_SYSTEM_ARCHPATH/$OPENCMISS_COMPILER_ARCHPATH$OPENCMISS_INSTRUMENTATION_ARCHPATH$OPENCMISS_MULTITHREADING_ARCHPATH/$OPENCMISS_NOMPI_ARCHPATH
 
 	# Add installed binary directories to path
-	if [ -d $OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_NOMPI/bin ]; then
+	if [ \( -d $OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_NOMPI/bin \) ]; then
 	    if [ ! $?PATH ]; then
 		export PATH=$OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_NOMPI/bin
 	    else
 		export PATH=$OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_NOMPI/bin:$PATH
 	    fi
     	fi    
-	if [ -d $OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_MPI/bin ]; then
+	if [ \( -d $OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_MPI/bin \) ]; then
 	    if [ ! $?PATH ]; then
 		export PATH=$OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_MPI/bin
 	    else
@@ -725,7 +740,7 @@ case $sysname in
 		export OPENCMISS_PYTHON_VERSION=$OPENCMISS_PYTHON_MAJOR_VERSION.$OPENCMISS_PYTHON_MINOR_VERSION
 	    fi
 	    export OPENCMISS_PYTHON_PATH=$OPENCMISS_INSTALL_ROOT/$OPENCMISS_ARCHPATH_MPI/lib/python$OPENCMISS_PYTHON_VERSION/$OPENCMISS_BUILD_TYPE_ARCHPATH/opencmiss.iron
-	    if [ -d $OPENCMISS_PYTHON_PATH ]; then
+	    if [ \( -d $OPENCMISS_PYTHON_PATH \) ]; then
 		if [ ! $?PYTHONPATH ]; then
 		    export PYTHONPATH=$OPENCMISS_PYTHON_PATH
 		else
@@ -736,8 +751,8 @@ case $sysname in
 
 	# Setup LaTeX paths for OpenCMISS
 	if [ $OPENCMISS_SETUP_LATEX == true ]; then
-	    if [ -d $OPENCMISS_ROOT/documentation/notes/latex ]; then
-		if [ -d $OPENCMISS_ROOT/documentation/notes/figures ]; then
+	    if [ \( -d $OPENCMISS_ROOT/documentation/notes/latex \) ]; then
+		if [ \( -d $OPENCMISS_ROOT/documentation/notes/figures \) ]; then
 		    if [ ! $?TEXINPUTS ]; then
 			export TEXINPUTS=.:$OPENCMISS_ROOT/documentation/notes/latex//:$OPENCMISS_ROOT/documentation/notes/figures//:
 		    else
@@ -751,7 +766,7 @@ case $sysname in
 		    fi
 		fi    
  	    fi
-	    if [ -d $OPENCMISS_ROOT/documentation/notes/references ]; then
+	    if [ \( -d $OPENCMISS_ROOT/documentation/notes/references \) ]; then
 		if [ ! $?BIBINPUTS ]; then
 		    export BIBINPUTS=.:$OPENCMISS_ROOT/documentation/notes/references//:
 		else
@@ -763,15 +778,15 @@ case $sysname in
 		    export BSTINPUTS=.:$OPENCMISS_ROOT/documentation/notes/references//:$BSTINPUTS:
 		fi
 	    fi
-	    if [ ! -e ~/texTextPreamble.ini ]; then
-		ln -s $OPENCMISS_ROOT/documentation/notes/latex/texTextPreamble.ini ~/texTextPreamble.ini
+	    if [ ! \( -e $HOME/texTextPreamble.ini \) ]; then
+		ln -s $OPENCMISS_ROOT/documentation/notes/latex/texTextPreamble.ini $HOME/texTextPreamble.ini
 	    fi
 	    alias latexmake='./Latex_make.sh'
 	fi
 	
 	# Setup git prompt for OpenCMISS
 	if [ $OPENCMISS_SETUP_GITPROMPT == true ]; then
-	    if [ -r $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh ]; then
+	    if [ \( -r $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh \) ]; then
 		. $OPENCMISS_ROOT/utilities/scripts/opencmiss_developer_gitprompt.sh
 		
 		# Prompt variables
