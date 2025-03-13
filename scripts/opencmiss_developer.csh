@@ -6,52 +6,52 @@ setenv HOST `hostname -s`
 setenv sysname `uname -s`
 setenv machine `uname -m`
 
-# Make sure OPENCMISS_ROOT is an absolute path
-if ( $?OPENCMISS_ROOT ) then
-    if ( -r ${OPENCMISS_ROOT} ) then
-      setenv OPENCMISS_ROOT `cd ${OPENCMISS_ROOT} && pwd `
+# Make sure OpenCMISS_ROOT is an absolute path
+if ( $?OpenCMISS_ROOT ) then
+    if ( -r ${OpenCMISS_ROOT} ) then
+      setenv OpenCMISS_ROOT `cd ${OpenCMISS_ROOT} && pwd `
     else
-      echo "OpenCMISS: OPENCMISS_ROOT directory does not exist."
+      echo "OpenCMISS: OpenCMISS_ROOT directory does not exist."
     endif
 else
-    echo "OpenCMISS: OPENCMISS_ROOT is not defined."
+    echo "OpenCMISS: OpenCMISS_ROOT is not defined."
 endif
 
-# Make sure OPENCMISS_INSTALL_ROOT is an absolute path
-if ( $?OPENCMISS_INSTALL_ROOT ) then
-    if ( -r ${OPENCMISS_INSTALL_ROOT} ) then
-      setenv OPENCMISS_INSTALL_ROOT `cd ${OPENCMISS_INSTALL_ROOT} && pwd `
+# Make sure OpenCMISS_INSTALL_ROOT is an absolute path
+if ( $?OpenCMISS_INSTALL_ROOT ) then
+    if ( -r ${OpenCMISS_INSTALL_ROOT} ) then
+      setenv OpenCMISS_INSTALL_ROOT `cd ${OpenCMISS_INSTALL_ROOT} && pwd `
     else
-      echo "OpenCMISS: OPENCMISS_INSTALL_ROOT directory does not exist."
+      echo "OpenCMISS: OpenCMISS_INSTALL_ROOT directory does not exist."
     endif
 else
-    setenv OPENCMISS_INSTALL_ROOT ${OPENCMISS_ROOT}/install	
+    setenv OpenCMISS_INSTALL_ROOT ${OpenCMISS_ROOT}/install	
 endif
 
 # Set defaults if not defined
-if ( ! $?OPENCMISS_SETUP_INTEL ) then
-    setenv OPENCMISS_SETUP_INTEL true
+if ( ! $?OpenCMISS_SETUP_INTEL ) then
+    setenv OpenCMISS_SETUP_INTEL true
 endif
-if ( ! $?OPENCMISS_SETUP_TOTALVIEW ) then
-    setenv OPENCMISS_SETUP_TOTALVIEW true
+if ( ! $?OpenCMISS_SETUP_TOTALVIEW ) then
+    setenv OpenCMISS_SETUP_TOTALVIEW true
 endif
-if ( ! $?OPENCMISS_SETUP_CUDA ) then
-    setenv OPENCMISS_SETUP_CUDA true
+if ( ! $?OpenCMISS_SETUP_CUDA ) then
+    setenv OpenCMISS_SETUP_CUDA true
 endif
-if ( ! $?OPENCMISS_SETUP_LATEX ) then
-    setenv OPENCMISS_SETUP_LATEX true
+if ( ! $?OpenCMISS_SETUP_LATEX ) then
+    setenv OpenCMISS_SETUP_LATEX true
 endif
-if ( ! $?OPENCMISS_SETUP_PYTHONPATH ) then
-    setenv OPENCMISS_SETUP_PYTHONPATH true
+if ( ! $?OpenCMISS_SETUP_PYTHONPATH ) then
+    setenv OpenCMISS_SETUP_PYTHONPATH true
 endif
-if ( ! $?OPENCMISS_SETUP_GITPROMPT ) then
-    setenv OPENCMISS_SETUP_GITPROMPT true
+if ( ! $?OpenCMISS_SETUP_GITPROMPT ) then
+    setenv OpenCMISS_SETUP_GITPROMPT true
 endif
-if ( ! $?OPENCMISS_MPI_BUILD_TYPE ) then
-    setenv OPENCMISS_MPI_BUILD_TYPE system
+if ( ! $?OpenCMISS_MPI_BUILD_TYPE ) then
+    setenv OpenCMISS_MPI_BUILD_TYPE system
 endif
-if ( ! $?OPENCMISS_BUILD_TYPE ) then
-    setenv OPENCMISS_BUILD_TYPE release
+if ( ! $?OpenCMISS_BUILD_TYPE ) then
+    setenv OpenCMISS_BUILD_TYPE release
 endif
 
 switch ( ${sysname} )
@@ -60,94 +60,94 @@ switch ( ${sysname} )
         setenv PROCESSOR_TYPE="`lsattr -El proc0 | grep "Processor type" | tr -s ' ' | cut -f2 -d" "`"
 	switch ( ${PROCESSOR_TYPE} )
 	    case PowerPC_POWER7:
-		setenv OPENCMISS_ARCHNAME power7-aix
+		setenv OpenCMISS_ARCHNAME power7-aix
 		breaksw
 	    case PowerPC_POWER6:
-		setenv OPENCMISS_ARCHNAME power6-aix
+		setenv OpenCMISS_ARCHNAME power6-aix
 		breaksw
 	    case PowerPC_POWER5:
-		setenv OPENCMISS_ARCHNAME power5-aix
+		setenv OpenCMISS_ARCHNAME power5-aix
 		breaksw
 	    case PowerPC_POWER4:
-		setenv OPENCMISS_ARCHNAME power4-aix
+		setenv OpenCMISS_ARCHNAME power4-aix
 		breaksw
 	    default:
 		echo "OpenCMISS: The processor architecture of ${PROCESSOR_TYPE} is unknown for AIX."
-		setenv OPENCMISS_ARCHNAME unknown-aix
+		setenv OpenCMISS_ARCHNAME unknown-aix
 	endsw
 	unsetenv PROCESSOR_TYPE
    	    
     case Linux:
 	
-	setenv OPENCMISS_ARCHNAME ${machine}-linux
+	setenv OpenCMISS_ARCHNAME ${machine}-linux
 
 	#Try and work out what linux distribution we are on
 	if ( -r "/etc/SuSE-release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION suse
-	    setenv OPENCMISS_SUSE_RELEASE `grep "VERSION" /etc/SuSE-release | cut -f2 -d"="`.`grep "PATCHLEVEL" /etc/SuSE-release | cut -f2 -d"="`
+	    setenv OpenCMISS_LINUX_DISTRIBUTION suse
+	    setenv OpenCMISS_SUSE_RELEASE `grep "VERSION" /etc/SuSE-release | cut -f2 -d"="`.`grep "PATCHLEVEL" /etc/SuSE-release | cut -f2 -d"="`
 	else if ( -r "/etc/redhat-release" ) then
 	    #Work out if it is Red Hat, Fedora or Scientific Linux
             if ( `grep "Red Hat Enterprise" /etc/redhat-release` !~ "" ) then
-		setenv OPENCMISS_LINUX_DISTRIBUTION redhat
-	        setenv OPENCMISS_REDHAT_RELEASE `cat /etc/redhat-release | cut -f7 -d" "`
+		setenv OpenCMISS_LINUX_DISTRIBUTION redhat
+	        setenv OpenCMISS_REDHAT_RELEASE `cat /etc/redhat-release | cut -f7 -d" "`
             else if ( `grep "Fedora" /etc/redhat-release` !~ "" ) then
-		setenv OPENCMISS_LINUX_DISTRIBUTION fedora
-	        setenv OPENCMISS_FEDORA_RELEASE `cat /etc/fedora-release | cut -f3 -d" "`
+		setenv OpenCMISS_LINUX_DISTRIBUTION fedora
+	        setenv OpenCMISS_FEDORA_RELEASE `cat /etc/fedora-release | cut -f3 -d" "`
             else if ( `grep "Scientific Linux" /etc/redhat-release` !~ "" ) then
-		setenv OPENCMISS_LINUX_DISTRIBUTION scientificlinux
-	        setenv OPENCMISS_SCILINUX_RELEASE `cat /etc/fedora-release | cut -f4 -d" " | cut -f1 -d"."`
+		setenv OpenCMISS_LINUX_DISTRIBUTION scientificlinux
+	        setenv OpenCMISS_SCILINUX_RELEASE `cat /etc/fedora-release | cut -f4 -d" " | cut -f1 -d"."`
             else if ( `grep "CentOS" /etc/redhat-release` !~ "" ) then
-		setenv OPENCMISS_LINUX_DISTRIBUTION centos
-	        setenv OPENCMISS_CENTOS_RELEASE `cat /etc/redhat-release | cut -f4 -d" " | cut -f1 -d"."`
+		setenv OpenCMISS_LINUX_DISTRIBUTION centos
+	        setenv OpenCMISS_CENTOS_RELEASE `cat /etc/redhat-release | cut -f4 -d" " | cut -f1 -d"."`
             else 
 		echo "OpenCMISS: Can not determine Linux distribution from /etc/redhat-release."
-		setenv OPENCMISS_LINUX_DISTRIBUTION unknown
+		setenv OpenCMISS_LINUX_DISTRIBUTION unknown
 	    endif
 	else if ( -r "/etc/redhat_version" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION redhat
+	    setenv OpenCMISS_LINUX_DISTRIBUTION redhat
 	else if ( -r "/etc/fedora-release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION fedora
-	    setenv OPENCMISS_FEDORA_RELEASE `cat /etc/fedora-release | cut -f3 -d" "`
+	    setenv OpenCMISS_LINUX_DISTRIBUTION fedora
+	    setenv OpenCMISS_FEDORA_RELEASE `cat /etc/fedora-release | cut -f3 -d" "`
 	else if ( -r "/etc/slackware-release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION slackware
+	    setenv OpenCMISS_LINUX_DISTRIBUTION slackware
 	else if ( -r "/etc/slackware-version" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION slackware
+	    setenv OpenCMISS_LINUX_DISTRIBUTION slackware
 	else if ( -r "/etc/lsb-release" ) then
             #Work out if it is Ubuntu or Mint
             if ( `grep "DISTRIB_ID=Ubuntu" /etc/lsb-release` !~ "" ) then
-	      setenv OPENCMISS_LINUX_DISTRIBUTION ubuntu
-	      setenv OPENCMISS_UBUNTU_RELEASE `grep "DISTRIB_RELEASE" /etc/lsb-release | cut -f2 -d"="`
+	      setenv OpenCMISS_LINUX_DISTRIBUTION ubuntu
+	      setenv OpenCMISS_UBUNTU_RELEASE `grep "DISTRIB_RELEASE" /etc/lsb-release | cut -f2 -d"="`
             else if ( `grep "DISTRIB_ID=LinuxMint" /etc/lsb-release` !~ "" ) then
-	      setenv OPENCMISS_LINUX_DISTRIBUTION mint
-	      setenv OPENCMISS_MINT_RELEASE `grep "DISTRIB_RELEASE" /etc/lsb-release | cut -f2 -d"="`
+	      setenv OpenCMISS_LINUX_DISTRIBUTION mint
+	      setenv OpenCMISS_MINT_RELEASE `grep "DISTRIB_RELEASE" /etc/lsb-release | cut -f2 -d"="`
             else 
 		echo "OpenCMISS: Can not determine Linux distribution from /etc/lsb-release."
-		setenv OPENCMISS_LINUX_DISTRIBUTION unknown
+		setenv OpenCMISS_LINUX_DISTRIBUTION unknown
 	    endif
 	else if ( -r "/etc/debian_release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION debian
+	    setenv OpenCMISS_LINUX_DISTRIBUTION debian
 	else if ( -r "/etc/debian_version" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION debian
+	    setenv OpenCMISS_LINUX_DISTRIBUTION debian
 	else if ( -r "/etc/mandrake-release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION mandrake
+	    setenv OpenCMISS_LINUX_DISTRIBUTION mandrake
 	else if ( -r "/etc/yellowdog-release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION yellowdog
+	    setenv OpenCMISS_LINUX_DISTRIBUTION yellowdog
 	else if ( -r "/etc/sun-release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION sun
+	    setenv OpenCMISS_LINUX_DISTRIBUTION sun
 	else if ( -r "/etc/release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION solaris
+	    setenv OpenCMISS_LINUX_DISTRIBUTION solaris
 	else if ( -r "/etc/gentoo-release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION gentoo
+	    setenv OpenCMISS_LINUX_DISTRIBUTION gentoo
 	else if ( -r "/etc/UnitedLinux-release" ) then
-	    setenv OPENCMISS_LINUX_DISTRIBUTION unitedlinux
+	    setenv OpenCMISS_LINUX_DISTRIBUTION unitedlinux
         else
 	    echo "OpenCMISS: Can not read /etc/issue. Linux distribution is unknown."
-	    setenv OPENCMISS_LINUX_DISTRIBUTION unknown
+	    setenv OpenCMISS_LINUX_DISTRIBUTION unknown
 	endif
 	    
-	switch ( ${OPENCMISS_LINUX_DISTRIBUTION} )
+	switch ( ${OpenCMISS_LINUX_DISTRIBUTION} )
 	    case ubuntu:
-		switch ( ${OPENCMISS_ARCHNAME} )
+		switch ( ${OpenCMISS_ARCHNAME} )
 		    case i686-linux:
 			setenv LIBAPI lib
 			setenv SYSLIBAPI lib
@@ -161,11 +161,11 @@ switch ( ${sysname} )
 			setenv INTELAPI intel64
 			breaksw
 		    default:
-			echo "OpenCMISS: Architecture name of ${OPENCMISS_ARCHNAME} is unknown."
+			echo "OpenCMISS: Architecture name of ${OpenCMISS_ARCHNAME} is unknown."
                 endsw
 		breaksw
 	    case mint:
-		switch ( ${OPENCMISS_ARCHNAME} )
+		switch ( ${OpenCMISS_ARCHNAME} )
 		    case i686-linux:
 			setenv LIBAPI lib
 			setenv SYSLIBAPI lib
@@ -179,11 +179,11 @@ switch ( ${sysname} )
 			setenv INTELAPI intel64
 			breaksw
 		    default:
-			echo "OpenCMISS: Architecture name of ${OPENCMISS_ARCHNAME} is unknown."
+			echo "OpenCMISS: Architecture name of ${OpenCMISS_ARCHNAME} is unknown."
 		endsw
 		breaksw
 	    default:
-		switch ( ${OPENCMISS_ARCHNAME} )
+		switch ( ${OpenCMISS_ARCHNAME} )
 		    case i686-linux:
 			setenv LIBAPI lib
 			setenv SYSLIBAPI lib
@@ -197,12 +197,12 @@ switch ( ${sysname} )
 			setenv INTELAPI intel64
 			breaksw
 		    default:
-			echo "OpenCMISS: Architecture name of ${OPENCMISS_ARCHNAME} is unknown."
+			echo "OpenCMISS: Architecture name of ${OpenCMISS_ARCHNAME} is unknown."
 		endsw
 	endsw
 	    
 	#Setup intel compilers if defined
-	if ( ${OPENCMISS_SETUP_INTEL} == true ) then
+	if ( ${OpenCMISS_SETUP_INTEL} == true ) then
 	    setenv INTEL_ONEAPI false
 	    if ( ! $?INTEL_ROOT ) then
 		if ( -d "/opt/intel/oneapi" ) then
@@ -268,7 +268,7 @@ switch ( ${sysname} )
 	endif
 
 	#Setup totalview if defined
-	if ( ${OPENCMISS_SETUP_TOTALVIEW} == true ) then
+	if ( ${OpenCMISS_SETUP_TOTALVIEW} == true ) then
 	    which totalview >& /dev/null
 	    if ( $? == 0 ) then
 		if ( ! $?TOTALVIEW_PATH ) then
@@ -339,7 +339,7 @@ switch ( ${sysname} )
 	endif	
 
 	#Setup cuda if defined
-	if ( $?OPENCMISS_SETUP_CUDA ) then
+	if ( $?OpenCMISS_SETUP_CUDA ) then
 	    which nvcc >& /dev/null		
 	    if ( $? == 0 ) then
 		setenv CUDA_NVCC_PATH `which nvcc`
@@ -391,8 +391,8 @@ switch ( ${sysname} )
 	endif
 		
 	#Setup toolchain if defined
-	if ( $?OPENCMISS_TOOLCHAIN ) then
-	    switch ( ${OPENCMISS_TOOLCHAIN} )
+	if ( $?OpenCMISS_TOOLCHAIN ) then
+	    switch ( ${OpenCMISS_TOOLCHAIN} )
 		case gnu:
 		    which gcc >& /dev/null		
 		    if ( $? == 0 ) then
@@ -456,19 +456,19 @@ switch ( ${sysname} )
 		    endif
 		    breaksw
 		default:
-		    echo "OpenCMISS: OPENCMISS_TOOLCHAIN of ${OPENCMISS_TOOLCHAIN} is unknown."
+		    echo "OpenCMISS: OpenCMISS_TOOLCHAIN of ${OpenCMISS_TOOLCHAIN} is unknown."
 		    setenv C_COMPILER_STRING unknown
 		    setenv FORTRAN_COMPILER_STRING unknown
 	    endsw
-	    setenv OPENCMISS_COMPILER_ARCHPATH ${C_COMPILER_STRING}-${FORTRAN_COMPILER_STRING}
+	    setenv OpenCMISS_COMPILER_ARCHPATH ${C_COMPILER_STRING}-${FORTRAN_COMPILER_STRING}
 	    unsetenv C_COMPILER_STRING
 	    unsetenv FORTRAN_COMPILER_STRING
 	endif
 
 	# If MKL has been found, set some environment variables used by the MKL single dynamic library
 	if ( $?MKLROOT ) then
-	    if ( $?OPENCMISS_USE_MKL_THREADING ) then
-		switch ( ${OPENCMISS_TOOLCHAIN} )
+	    if ( $?OpenCMISS_USE_MKL_THREADING ) then
+		switch ( ${OpenCMISS_TOOLCHAIN} )
 		    case intel:
 			setenv MKL_THREADING_LAYER INTEL
 			breaksw
@@ -478,7 +478,7 @@ switch ( ${sysname} )
 		    case ibm:
 			breaksw
 		    default:
-			echo "OpenCMISS: OPENCMISS_TOOLCHAIN of ${OPENCMISS_TOOLCHAIN} is unknown."
+			echo "OpenCMISS: OpenCMISS_TOOLCHAIN of ${OpenCMISS_TOOLCHAIN} is unknown."
 			breaksw
 		endsw
 	    else
@@ -487,36 +487,36 @@ switch ( ${sysname} )
 	    setenv MKL_INTERFACE_LAYER LP64
 	endif
 
-	if ( $?OPENCMISS_INSTRMENTATION ) then
-	    switch ( ${OPENCMISS_INSTRUMENTATION} )
+	if ( $?OpenCMISS_INSTRMENTATION ) then
+	    switch ( ${OpenCMISS_INSTRUMENTATION} )
 		case scorep:
-		    setenv OPENCMISS_INSTRUMENTATION_ARCHPATH -scorep
+		    setenv OpenCMISS_INSTRUMENTATION_ARCHPATH -scorep
 		    breaksw
 		case gprof:
-		    setenv OPENCMISS_INSTRUMENTATION_ARCHPATH -gprof      
+		    setenv OpenCMISS_INSTRUMENTATION_ARCHPATH -gprof      
 		    breaksw
 		case vtune:
-		    setenv OPENCMISS_INSTRUMENTATION_ARCHPATH -vtune      
+		    setenv OpenCMISS_INSTRUMENTATION_ARCHPATH -vtune      
 		    breaksw
 		case none:
-		    setenv OPENCMISS_INSTRUMENTATION_ARCHPATH      
+		    setenv OpenCMISS_INSTRUMENTATION_ARCHPATH      
 		    breaksw
 		default:
-		    echo "OpenCMISS: OPENCMISS_INSTRUMENTATION of ${OPENCMISS_INSTRUMENTATION} is unknown."
-		    setenv OPENCMISS_INSTRUMENTATION_ARCHPATH  -unknown
+		    echo "OpenCMISS: OpenCMISS_INSTRUMENTATION of ${OpenCMISS_INSTRUMENTATION} is unknown."
+		    setenv OpenCMISS_INSTRUMENTATION_ARCHPATH  -unknown
 	    endsw
 	else
-	    setenv OPENCMISS_INSTRUMENTATION_ARCHPATH
+	    setenv OpenCMISS_INSTRUMENTATION_ARCHPATH
 	endif
 
-	if ( $?OPENCMISS_MULTITHREADING ) then
-	    setenv OPENCMISS_MULTITHREADING_ARCHPATH mt
+	if ( $?OpenCMISS_MULTITHREADING ) then
+	    setenv OpenCMISS_MULTITHREADING_ARCHPATH mt
 	else
-	    setenv OPENCMISS_MULTITHREADING_ARCHPATH
+	    setenv OpenCMISS_MULTITHREADING_ARCHPATH
 	endif
     
-	if ( $?OPENCMISS_MPI ) then
-	    switch ( ${OPENCMISS_MPI} )
+	if ( $?OpenCMISS_MPI ) then
+	    switch ( ${OpenCMISS_MPI} )
 		case none:
 		    setenv MPI_STRING 
 		    breaksw
@@ -525,7 +525,7 @@ switch ( ${sysname} )
 		    breaksw
 		case mpich2:
 		    setenv MPI_STRING mpich2
-		    switch ( ${OPENCMISS_LINUX_DISTRIBUTION} )
+		    switch ( ${OpenCMISS_LINUX_DISTRIBUTION} )
 			case fedora:
 			    #Fedora doesn't include mpich in the path by default
 			    if ( ! $?PATH ) then
@@ -543,7 +543,7 @@ switch ( ${sysname} )
 		    breaksw
 		case openmpi:
 		    setenv MPI_STRING openmpi
-		    switch ( ${OPENCMISS_LINUX_DISTRIBUTION} )
+		    switch ( ${OpenCMISS_LINUX_DISTRIBUTION} )
 			case fedora:
 			    #Fedora doesn't include openmpi in the path by default
 			    if ( ! $?PATH ) then
@@ -614,19 +614,19 @@ switch ( ${sysname} )
 		    endif
 		    breaksw      
 		default:
-		    echo "OpenCMISS: OPENCMISS_MPI of ${OPENCMISS_MPI} is unknown."
+		    echo "OpenCMISS: OpenCMISS_MPI of ${OpenCMISS_MPI} is unknown."
 		    setenv MPI_STRING unknown
 	    endsw
-	    setenv OPENCMISS_MPI_ARCHPATH ${MPI_STRING}
-	    setenv OPENCMISS_NOMPI_ARCHPATH no_mpi
+	    setenv OpenCMISS_MPI_ARCHPATH mpi-${MPI_STRING}
+	    setenv OpenCMISS_NOMPI_ARCHPATH mpi-none
 	    unsetenv MPI_STRING
 	else
-	    setenv OPENCMISS_MPI_ARCHPATH 
-	    setenv OPENCMISS_NOMPI_ARCHPATH	    
+	    setenv OpenCMISS_MPI_ARCHPATH 
+	    setenv OpenCMISS_NOMPI_ARCHPATH	    
 	endif
 
-        if ( $?OPENCMISS_MPI_BUILD_TYPE ) then
-	    switch ( ${OPENCMISS_MPI_BUILD_TYPE} )
+        if ( $?OpenCMISS_MPI_BUILD_TYPE ) then
+	    switch ( ${OpenCMISS_MPI_BUILD_TYPE} )
 	       case debug:
 		    setenv MPI_BUILD_TYPE_STRING _debug
 		    breaksw
@@ -640,15 +640,15 @@ switch ( ${sysname} )
 		    setenv MPI_BUILD_TYPE_STRING _system
 		    breaksw
 		default:
-		    echo "OpenCMISS: OPENCMISS_MPI_BUILD_TYPE of ${OPENCMISS_MPI_BUILD_TYPE} is unknown."
+		    echo "OpenCMISS: OpenCMISS_MPI_BUILD_TYPE of ${OpenCMISS_MPI_BUILD_TYPE} is unknown."
 		    setenv MPI_BUILD_TYPE_STRING unknown		    
 	     endsw
-	     setenv OPENCMISS_MPI_ARCHPATH ${OPENCMISS_MPI_ARCHPATH}${MPI_BUILD_TYPE_STRING}
+	     setenv OpenCMISS_MPI_ARCHPATH ${OpenCMISS_MPI_ARCHPATH}${MPI_BUILD_TYPE_STRING}
 	     unsetenv MPI_BUILD_TYPE_STRING
 	endif
     
-	if ( $?OPENCMISS_BUILD_TYPE ) then
-	    switch ( ${OPENCMISS_BUILD_TYPE} )
+	if ( $?OpenCMISS_BUILD_TYPE ) then
+	    switch ( ${OpenCMISS_BUILD_TYPE} )
 		case debug:
 		    setenv BUILD_TYPE_STRING debug
 		    breaksw
@@ -674,116 +674,116 @@ switch ( ${sysname} )
 		    setenv BUILD_TYPE_STRING MinSizeRel
 		    breaksw
 		default:
-		    echo "OpenCMISS: OPENCMISS_BUILD_TYPE of ${OPENCMISS_BUILD_TYPE} is unknown."
+		    echo "OpenCMISS: OpenCMISS_BUILD_TYPE of ${OpenCMISS_BUILD_TYPE} is unknown."
 		    setenv BUILD_TYPE_STRING unknown		    
 	    endsw
-	    setenv OPENCMISS_BUILD_TYPE_ARCHPATH ${BUILD_TYPE_STRING}
+	    setenv OpenCMISS_BUILD_TYPE_ARCHPATH ${BUILD_TYPE_STRING}
 	    unsetenv BUILD_TYPE_STRING	
 	else
-	    setenv OPENCMISS_BUILD_TYPE_ARCHPATH
+	    setenv OpenCMISS_BUILD_TYPE_ARCHPATH
 	endif
 
-        switch( ${OPENCMISS_ARCHNAME} )
+        switch( ${OpenCMISS_ARCHNAME} )
 	    case i686-linux:
-		setenv OPENCMISS_SYSTEM_ARCHPATH i686_linux
+		setenv OpenCMISS_SYSTEM_ARCHPATH i686_linux
 		breaksw    
 	    case x86_64-linux:
-		setenv OPENCMISS_SYSTEM_ARCHPATH x86_64_linux
+		setenv OpenCMISS_SYSTEM_ARCHPATH x86_64_linux
 		breaksw    
 	    default:
-		echo "OpenCMISS: OPENCMISS_ARCHNAME of ${OPENCMISS_ARCHNAME} is unknown."
- 		setenv OPENCMISS_SYSTEM_ARCHPATH 
+		echo "OpenCMISS: OpenCMISS_ARCHNAME of ${OpenCMISS_ARCHNAME} is unknown."
+ 		setenv OpenCMISS_SYSTEM_ARCHPATH 
         endsw
 	    
-	setenv OPENCMISS_ARCHPATH_MPI ${OPENCMISS_SYSTEM_ARCHPATH}/${OPENCMISS_COMPILER_ARCHPATH}${OPENCMISS_INSTRUMENTATION_ARCHPATH}${OPENCMISS_MULTITHREADING_ARCHPATH}/${OPENCMISS_MPI_ARCHPATH}
-	setenv OPENCMISS_ARCHPATH_NOMPI ${OPENCMISS_SYSTEM_ARCHPATH}/${OPENCMISS_COMPILER_ARCHPATH}${OPENCMISS_INSTRUMENTATION_ARCHPATH}${OPENCMISS_MULTITHREADING_ARCHPATH}/${OPENCMISS_NOMPI_ARCHPATH}
+	setenv OpenCMISS_ARCHPATH_MPI ${OpenCMISS_SYSTEM_ARCHPATH}/${OpenCMISS_COMPILER_ARCHPATH}${OpenCMISS_INSTRUMENTATION_ARCHPATH}${OpenCMISS_MULTITHREADING_ARCHPATH}/${OpenCMISS_MPI_ARCHPATH}
+	setenv OpenCMISS_ARCHPATH_NOMPI ${OpenCMISS_SYSTEM_ARCHPATH}/${OpenCMISS_COMPILER_ARCHPATH}${OpenCMISS_INSTRUMENTATION_ARCHPATH}${OpenCMISS_MULTITHREADING_ARCHPATH}/${OpenCMISS_NOMPI_ARCHPATH}
 
 	# Add installed binary directories to path
-	if ( -d ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_NOMPI}/bin ) then
+	if ( -d ${OpenCMISS_INSTALL_ROOT}/${OpenCMISS_ARCHPATH_NOMPI}/bin ) then
 	    if ( ! $?PATH ) then
-		setenv PATH ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_NOMPI}/bin
+		setenv PATH ${OpenCMISS_INSTALL_ROOT}/${OpenCMISS_ARCHPATH_NOMPI}/bin
 	    else
-		setenv PATH ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_NOMPI}/bin:${PATH}
+		setenv PATH ${OpenCMISS_INSTALL_ROOT}/${OpenCMISS_ARCHPATH_NOMPI}/bin:${PATH}
 	    endif
     	endif    
-	if ( -d ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/bin ) then
+	if ( -d ${OpenCMISS_INSTALL_ROOT}/${OpenCMISS_ARCHPATH_MPI}/bin ) then
 	    if ( ! $?PATH ) then
-		setenv PATH ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/bin
+		setenv PATH ${OpenCMISS_INSTALL_ROOT}/${OpenCMISS_ARCHPATH_MPI}/bin
 	    else
-		setenv PATH ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/bin:${PATH}
+		setenv PATH ${OpenCMISS_INSTALL_ROOT}/${OpenCMISS_ARCHPATH_MPI}/bin:${PATH}
 	    endif
 	endif
 
 	# Setup python path for OpenCMISS
-	if ( ${OPENCMISS_SETUP_PYTHONPATH} == true ) then
-	    if ( ! $?OPENCMISS_PYTHON_VERSION ) then
+	if ( ${OpenCMISS_SETUP_PYTHONPATH} == true ) then
+	    if ( ! $?OpenCMISS_PYTHON_VERSION ) then
 		which python >& /dev/null		
 		if ( $? == 0 ) then
-		    setenv OPENCMISS_PYTHON_MAJOR_VERSION `python --version | cut -f2 -d' ' | cut -f1 -d.`
-		    setenv OPENCMISS_PYTHON_MINOR_VERSION `python --version | cut -f2 -d' ' | cut -f2 -d.`
+		    setenv OpenCMISS_PYTHON_MAJOR_VERSION `python --version | cut -f2 -d' ' | cut -f1 -d.`
+		    setenv OpenCMISS_PYTHON_MINOR_VERSION `python --version | cut -f2 -d' ' | cut -f2 -d.`
 		else
-		    setenv OPENCMISS_PYTHON_MAJOR_VERSION 3
-		    setenv OPENCMISS_PYTHON_MINOR_VERSION 7
+		    setenv OpenCMISS_PYTHON_MAJOR_VERSION 3
+		    setenv OpenCMISS_PYTHON_MINOR_VERSION 12
 		endif
-		setenv OPENCMISS_PYTHON_VERSION ${OPENCMISS_PYTHON_MAJOR_VERSION}.${OPENCMISS_PYTHON_MINOR_VERSION}
+		setenv OpenCMISS_PYTHON_VERSION ${OpenCMISS_PYTHON_MAJOR_VERSION}.${OpenCMISS_PYTHON_MINOR_VERSION}
 	    endif
-	    setenv OPENCMISS_PYTHON_PATH_OLD ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/python/${OPENCMISS_BUILD_TYPE_ARCHPATH}
-	    setenv OPENCMISS_PYTHON_PATH ${OPENCMISS_INSTALL_ROOT}/${OPENCMISS_ARCHPATH_MPI}/lib/python${OPENCMISS_PYTHON_VERSION}/${OPENCMISS_BUILD_TYPE_ARCHPATH}/opencmiss.iron
-	    if ( -d ${OPENCMISS_PYTHON_PATH_OLD} ) then
+	    setenv OpenCMISS_PYTHON_PATH_OLD ${OpenCMISS_INSTALL_ROOT}/${OpenCMISS_ARCHPATH_MPI}/python/${OpenCMISS_BUILD_TYPE_ARCHPATH}
+	    setenv OpenCMISS_PYTHON_PATH ${OpenCMISS_INSTALL_ROOT}/${OpenCMISS_ARCHPATH_MPI}/${OpenCMISS_BUILD_TYPE_ARCHPATH}/lib/python${OpenCMISS_PYTHON_VERSION}/opencmiss
+	    if ( -d ${OpenCMISS_PYTHON_PATH_OLD} ) then
 		if ( ! $?PYTHONPATH ) then
-		    setenv PYTHONPATH ${OPENCMISS_PYTHON_PATH_OLD}
+		    setenv PYTHONPATH ${OpenCMISS_PYTHON_PATH_OLD}
 		else
-		    setenv PYTHONPATH ${OPENCMISS_PYTHON_PATH_OLD}:${PYTHONPATH}
+		    setenv PYTHONPATH ${OpenCMISS_PYTHON_PATH_OLD}:${PYTHONPATH}
 		endif
  	    endif
-	    if ( -d ${OPENCMISS_PYTHON_PATH} ) then
+	    if ( -d ${OpenCMISS_PYTHON_PATH} ) then
 		if ( ! $?PYTHONPATH ) then
-		    setenv PYTHONPATH ${OPENCMISS_PYTHON_PATH}
+		    setenv PYTHONPATH ${OpenCMISS_PYTHON_PATH}
 		else
-		    setenv PYTHONPATH ${OPENCMISS_PYTHON_PATH}:${PYTHONPATH}
+		    setenv PYTHONPATH ${OpenCMISS_PYTHON_PATH}:${PYTHONPATH}
 		endif
  	    endif
 	endif
 
 	# Setup LaTeX paths for OpenCMISS
-	if ( ${OPENCMISS_SETUP_LATEX} == true ) then
-	    if ( -d ${OPENCMISS_ROOT}/documentation/notes/latex ) then
-		if ( -d ${OPENCMISS_ROOT}/documentation/notes/figures ) then
+	if ( ${OpenCMISS_SETUP_LATEX} == true ) then
+	    if ( -d ${OpenCMISS_ROOT}/documentation/notes/latex ) then
+		if ( -d ${OpenCMISS_ROOT}/documentation/notes/figures ) then
 		    if ( ! $?TEXINPUTS ) then
-			setenv TEXINPUTS .:${OPENCMISS_ROOT}/documentation/notes/latex//:${OPENCMISS_ROOT}/documentation/notes/figures//:
+			setenv TEXINPUTS .:${OpenCMISS_ROOT}/documentation/notes/latex//:${OpenCMISS_ROOT}/documentation/notes/figures//:
 		    else
-			setenv TEXINPUTS .:${OPENCMISS_ROOT}/documentation/notes/latex//:${OPENCMISS_ROOT}/documentation/notes/figures//:${TEXINPUTS}:
+			setenv TEXINPUTS .:${OpenCMISS_ROOT}/documentation/notes/latex//:${OpenCMISS_ROOT}/documentation/notes/figures//:${TEXINPUTS}:
 		    endif
 		else
 		    if ( ! $?TEXINPUTS ) then
-			setenv TEXINPUTS .:${OPENCMISS_ROOT}/documentation/notes/latex//:
+			setenv TEXINPUTS .:${OpenCMISS_ROOT}/documentation/notes/latex//:
 		    else
-			setenv TEXINPUTS .:${OPENCMISS_ROOT}/documentation/notes/latex//:${TEXINPUTS}:
+			setenv TEXINPUTS .:${OpenCMISS_ROOT}/documentation/notes/latex//:${TEXINPUTS}:
 		    endif
 		endif    
  	    endif
-	    if ( -d ${OPENCMISS_ROOT}/documentation/notes/references ) then
+	    if ( -d ${OpenCMISS_ROOT}/documentation/notes/references ) then
 		if ( ! $?BIBINPUTS ) then
-		    setenv BIBINPUTS .:${OPENCMISS_ROOT}/documentation/notes/references//:
+		    setenv BIBINPUTS .:${OpenCMISS_ROOT}/documentation/notes/references//:
 		else
-		    setenv BIBINPUTS .:${OPENCMISS_ROOT}/documentation/notes/references//:${BIBINPUTS}:
+		    setenv BIBINPUTS .:${OpenCMISS_ROOT}/documentation/notes/references//:${BIBINPUTS}:
 		endif
 		if ( ! $?BSTINPUTS ) then
-		    setenv BSTINPUTS .:${OPENCMISS_ROOT}/documentation/notes/references//:
+		    setenv BSTINPUTS .:${OpenCMISS_ROOT}/documentation/notes/references//:
 		else
-		    setenv BSTINPUTS .:${OPENCMISS_ROOT}/documentation/notes/references//:${BSTINPUTS}:
+		    setenv BSTINPUTS .:${OpenCMISS_ROOT}/documentation/notes/references//:${BSTINPUTS}:
 		endif
 	    endif
 	    if ( ! -e ~/texTextPreamble.ini ) then
-		ln -s ${OPENCMISS_ROOT}/documentation/notes/latex/texTextPreamble.ini ~/texTextPreamble.ini
+		ln -s ${OpenCMISS_ROOT}/documentation/notes/latex/texTextPreamble.ini ~/texTextPreamble.ini
 	    endif
 	    alias latexmake ./Latex_make.sh
 	endif
 	
 	# Setup git prompt for OpenCMISS
-	if ( ${OPENCMISS_SETUP_GITPROMPT} == true ) then
+	if ( ${OpenCMISS_SETUP_GITPROMPT} == true ) then
 	    unalias precmd
-	    alias precmd 'source ${OPENCMISS_ROOT}/utilities/scripts/opencmiss_developer_gitprompt.csh'
+	    alias precmd 'source ${OpenCMISS_ROOT}/utilities/scripts/opencmiss_developer_gitprompt.csh'
 	endif
 	
 	unsetenv LIBAPI 
