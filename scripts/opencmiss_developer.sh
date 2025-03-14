@@ -153,7 +153,7 @@ case $sysname in
 		export INTELAPI=ia32
 		;;
 	      'x86_64-linux')
-	        export LIBAPI=lib64
+	        export LIBAPI=lib
 		export SYSLIBAPI=lib
                 export BINAPI=bin64
 		export INTELAPI=intel64
